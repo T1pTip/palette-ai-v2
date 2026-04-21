@@ -1,0 +1,23 @@
+{
+  "id": "/palette-ai-v2/",
+  "name": "Palette AI v2",
+  "short_name": "Palette AI v2",
+  "description": "AI image prompt builder (Layout B)",
+  "start_url": "/palette-ai-v2/",
+  "display": "standalone",
+  "orientation": "natural",
+  "background_color": "#08080f",
+  "theme_color": "#007aff",
+  "categories": ["productivity", "utilities", "graphics"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "prefer_related_applications": false,
+  "scope": "/palette-ai-v2/"
+}
