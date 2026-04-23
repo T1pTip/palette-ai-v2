@@ -180,6 +180,21 @@
     css += '@keyframes paeSigDrawA { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }';
     css += '@keyframes paeSigDrawN { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }';
 
+    // v2 NEW: Result box + action row moved to BOTTOM (below categories)
+    css += '@media (min-width: 768px) {';
+    css += '  .app > .result-box { order: 6 !important; width: 100% !important; max-width: 100% !important; margin-top: 12px !important; }';
+    css += '  .app > .action-row { order: 7 !important; width: 100% !important; max-width: 100% !important; }';
+    css += '}';
+    css += '@media (max-width: 767px) {';
+    css += '  .app > .result-box { order: 6 !important; width: 100% !important; margin-top: 12px !important; }';
+    css += '  .app > .action-row { order: 7 !important; width: 100% !important; }';
+    css += '}';
+
+    // v2 NEW: PayBox tip button — fixed at bottom of viewport (originally intended as pb-float)
+    css += '.pb-float { position: fixed !important; inset-inline-start: 16px !important; bottom: 16px !important; inset-inline-end: auto !important; top: auto !important; z-index: 999 !important; }';
+    // Give the body padding so the fixed button never overlaps content
+    css += 'body { padding-bottom: 80px !important; }';
+
     st.textContent = css;
     document.head.appendChild(st);
     _log('styles injected');
@@ -209,6 +224,27 @@
     hdr.appendChild(emojiSpan);
     hdr.appendChild(textSpan);
     return hdr;
+  }
+
+  // ============================================================
+  // LAYOUT B v2: Move result-box + action-row to BOTTOM of .app
+  // ============================================================
+  function moveResultToBottom() {
+    var app = document.querySelector('.app');
+    var rightCol = document.querySelector('.right-col');
+    if (!app || !rightCol) return false;
+    var resultBox = rightCol.querySelector('.result-box');
+    var actionRow = rightCol.querySelector('.action-row');
+    // Move them out to .app (direct children), at the end
+    if (resultBox && resultBox.parentElement !== app) {
+      app.appendChild(resultBox);
+      _log('moved .result-box to .app (order:6)');
+    }
+    if (actionRow && actionRow.parentElement !== app) {
+      app.appendChild(actionRow);
+      _log('moved .action-row to .app (order:7)');
+    }
+    return !!(resultBox && actionRow);
   }
 
   function injectSectionHeaders() {
@@ -421,6 +457,7 @@
     attempts++;
     injectAllStyles();
     injectSectionHeaders();
+    moveResultToBottom();
     addHelpButton();
     wrapShare();
     if (attempts < 10) setTimeout(boot, 400);
