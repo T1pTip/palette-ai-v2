@@ -11,29 +11,134 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
 <title>Palette AI 🎨</title>
-<!-- S21.6 (2026-05-08): SW registration only — restores v1 banner-based update flow.
-     Banner UI ("גירסה חדשה זמינה" + רענן) is provided by installSwUpdateBanner() in pae-v6 module (already in code).
-     The register() call was lost during v1→v2 refactor; this restores the missing piece.
-     updateViaCache: 'none' forces fresh fetch of sw.js on each visit (bypass HTTP cache). -->
+<!-- S22 (2026-05-08): Triple-redundant version check + banner.
+     Path A: SW register + controllerchange (existing pae-v6 installSwUpdateBanner handles this)
+     Path B: postMessage PAE_NEW_VERSION from SW activate (NEW)
+     Path C: version.json polling every 30s + on visibility change (NEW — works WITHOUT SW)
+     All paths converge on showBanner() with shared __paeV6_swBannerShown guard. -->
 <script>
 (function() {
-  if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
-    .then(function(reg) {
-      try { console.log('[pae-sw] registered, scope:', reg.scope); } catch(e) {}
-      // Auto-prompt waiting SWs to activate (covers tabs already open during deploy)
-      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-      reg.addEventListener('updatefound', function() {
-        var newSW = reg.installing;
-        if (!newSW) return;
-        newSW.addEventListener('statechange', function() {
-          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-            newSW.postMessage({ type: 'SKIP_WAITING' });
+  if (window.__paeV22Installed) return;
+  window.__paeV22Installed = true;
+
+  var CHECK_URL = 'version.json';
+  var POLL_MS = 30000;
+  var STORAGE_KEY = 'paeAppVersion';
+
+  function showBanner(newVersion) {
+    if (window.__paeV6_swBannerShown) return;
+    if (document.querySelector('.pae-sw-banner')) return;
+    window.__paeV6_swBannerShown = true;
+    try { console.log('[pae-v22] showing update banner, new version:', newVersion); } catch(e) {}
+    var bar = document.createElement('div');
+    bar.className = 'pae-sw-banner';
+    bar.setAttribute('role', 'status');
+    bar.setAttribute('aria-live', 'polite');
+    var msg = document.createElement('span');
+    msg.textContent = '🆕 גירסה חדשה זמינה';
+    bar.appendChild(msg);
+    var refresh = document.createElement('button');
+    refresh.className = 'pae-btn-refresh';
+    refresh.textContent = 'רענן';
+    refresh.onclick = function() {
+      try { if (newVersion) localStorage.setItem(STORAGE_KEY, newVersion); } catch(e) {}
+      var url = location.pathname + '?v=' + (newVersion || Date.now()) + '&cb=' + Date.now();
+      try { location.replace(url); } catch(e) { location.reload(); }
+    };
+    bar.appendChild(refresh);
+    var close = document.createElement('button');
+    close.className = 'pae-btn-close';
+    close.setAttribute('aria-label', 'סגור');
+    close.textContent = '✕';
+    close.onclick = function() { bar.remove(); window.__paeV6_swBannerShown = false; };
+    bar.appendChild(close);
+    function attach() {
+      if (document.body) document.body.appendChild(bar);
+      else document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(bar); });
+    }
+    attach();
+  }
+  window.paeShowUpdateBanner = showBanner;
+
+  // PATH A + B: SW registration + message listener
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+      .then(function(reg) {
+        try { console.log('[pae-sw] registered, scope:', reg.scope); } catch(e) {}
+        if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        reg.addEventListener('updatefound', function() {
+          var newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener('statechange', function() {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              newSW.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+        // Force update check on visibility change (catches stale SW)
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'visible' && reg.update) {
+            reg.update().catch(function() {});
           }
         });
-      });
-    })
-    .catch(function(err) { try { console.warn('[pae-sw] register failed:', err && err.message); } catch(e) {} });
+      })
+      .catch(function(err) { try { console.warn('[pae-sw] register failed:', err && err.message); } catch(e) {} });
+
+    // Path B: SW broadcast listener
+    navigator.serviceWorker.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'PAE_NEW_VERSION') {
+        try { console.log('[pae-v22] PAE_NEW_VERSION received:', e.data.version); } catch(err) {}
+        showBanner(e.data.version);
+      }
+    });
+  }
+
+  // PATH C: version.json polling — independent of SW lifecycle
+  function checkVersion() {
+    if (window.__paeV6_swBannerShown) return;
+    fetch(CHECK_URL + '?cb=' + Date.now(), { cache: 'no-store' })
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (!data || !data.version) return;
+        var stored = null;
+        try { stored = localStorage.getItem(STORAGE_KEY); } catch(e) {}
+        showVersionBadge(data.version);
+        if (!stored) {
+          try { localStorage.setItem(STORAGE_KEY, data.version); } catch(e) {}
+          return;
+        }
+        if (stored !== data.version) {
+          try { console.log('[pae-v22] version mismatch — stored:', stored, 'remote:', data.version); } catch(e) {}
+          showBanner(data.version);
+        }
+      })
+      .catch(function(err) { try { console.warn('[pae-v22] check failed:', err && err.message); } catch(e) {} });
+  }
+
+  function showVersionBadge(version) {
+    function inject() {
+      var existing = document.getElementById('paeVersionBadge');
+      if (existing) { existing.textContent = 'v' + version; return; }
+      var badge = document.createElement('div');
+      badge.id = 'paeVersionBadge';
+      badge.textContent = 'v' + version;
+      badge.style.cssText = 'position:fixed;bottom:6px;left:6px;font-size:9px;color:rgba(160,160,184,0.5);font-family:monospace;z-index:50;pointer-events:none;user-select:none;background:rgba(0,0,0,0.15);padding:2px 5px;border-radius:3px';
+      if (document.body) document.body.appendChild(badge);
+    }
+    if (document.body) inject();
+    else document.addEventListener('DOMContentLoaded', inject);
+  }
+
+  // Initial + polling + visibility-change
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkVersion);
+  } else {
+    checkVersion();
+  }
+  setInterval(checkVersion, POLL_MS);
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') checkVersion();
+  });
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
