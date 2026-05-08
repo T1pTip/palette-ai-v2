@@ -11,6 +11,44 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
 <title>Palette AI 🎨</title>
+<!-- S21 (2026-05-08): PWA auto-update listener — transparent updates for cached mobile users.
+     When SW v3.1+ activates, it sends SW_NEW_VERSION message + calls navigate() on this page.
+     This listener also handles future SW updates via controllerchange event. sessionStorage flag prevents reload loops. -->
+<script>
+(function() {
+  if (!('serviceWorker' in navigator)) return;
+  var KEY = '__pae_sw_reload_pending';
+  function safeReload() {
+    if (sessionStorage.getItem(KEY) === 'done') return;
+    try { sessionStorage.setItem(KEY, 'done'); } catch(e) {}
+    try { console.log('[pae-sw] new version detected — reloading'); } catch(e) {}
+    window.location.reload();
+  }
+  // 1. New SW takes control (after skipWaiting + claim) → auto reload
+  navigator.serviceWorker.addEventListener('controllerchange', safeReload);
+  // 2. Explicit message from SW activate handler → auto reload (backup channel)
+  navigator.serviceWorker.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'SW_NEW_VERSION') safeReload();
+  });
+  // 3. Clear the loop-prevention flag after page is stable (allows future updates)
+  window.addEventListener('load', function() {
+    setTimeout(function() { try { sessionStorage.removeItem(KEY); } catch(e) {} }, 3000);
+  });
+  // 4. On startup, prompt any waiting SW to activate immediately (covers tabs already open during deploy)
+  navigator.serviceWorker.ready.then(function(reg) {
+    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    reg.addEventListener('updatefound', function() {
+      var newSW = reg.installing;
+      if (!newSW) return;
+      newSW.addEventListener('statechange', function() {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          newSW.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    });
+  }).catch(function(){});
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"></noscript>
