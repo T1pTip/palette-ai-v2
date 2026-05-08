@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>🧹 Palette AI — Force Refresh</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: linear-gradient(160deg, #0a0a18 0%, #1a0a2a 100%);
+    color: #fff;
+    font-family: 'Rubik', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 20px 16px;
+    padding-top: env(safe-area-inset-top, 20px);
+  }
+  .container { max-width: 460px; margin: 0 auto; }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .sub { color: #a0a0b8; font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+  .status-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .status-title { font-size: 13px; font-weight: 600; color: #a0a0b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .status-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+  .status-row:last-child { border-bottom: none; }
+  .status-row .icon { font-size: 18px; flex-shrink: 0; }
+  .status-row .label { flex: 1; }
+  .status-row .value { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #00e5cc; }
+  .status-row .value.bad { color: #ff8080; }
+  .status-row .value.warn { color: #ffb830; }
+  
+  .big-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #ff3030, #cc1818);
+    color: #fff;
+    border: none;
+    padding: 18px;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 8px 0;
+    box-shadow: 0 4px 20px rgba(255, 60, 60, 0.35);
+    min-height: 56px;
+    touch-action: manipulation;
+  }
+  .big-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .big-btn.green { background: linear-gradient(135deg, #00cc66, #009944); box-shadow: 0 4px 20px rgba(0, 200, 100, 0.35); }
+  .big-btn.blue { background: linear-gradient(135deg, #007aff, #0055cc); box-shadow: 0 4px 20px rgba(0, 122, 255, 0.35); }
+  .big-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  .progress {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #00e596;
+    direction: ltr;
+    text-align: left;
+    min-height: 80px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  .progress .err { color: #ff8080; }
+  .progress .warn { color: #ffb830; }
+  
+  .countdown {
+    text-align: center;
+    font-size: 48px;
+    font-weight: 700;
+    color: #00e596;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .help {
+    background: rgba(0,122,255,0.08);
+    border: 1px solid rgba(0,122,255,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .help h3 { font-size: 14px; margin-bottom: 8px; color: #66b8ff; }
+  .help ol { padding-inline-start: 20px; }
+  .help li { margin: 4px 0; color: #c8c8d0; }
+  .help b { color: #fff; }
+  
+  .footer { text-align: center; font-size: 11px; color: #707088; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧹 Force Refresh</h1>
+  <div class="sub">מנקה SW + כל ה-caches בלחיצה אחת ומריץ מחדש את האתר</div>
+  
+  <div class="status-card">
+    <div class="status-title">סטטוס נוכחי</div>
+    <div id="status">
+      <div class="status-row">
+        <span class="icon">⏳</span>
+        <span class="label">בודק...</span>
+      </div>
+    </div>
+  </div>
+  
+  <button id="btnClear" class="big-btn">🚨 נקה הכל ופתח מחדש</button>
+  <button id="btnGo" class="big-btn green" style="display:none">✓ פתח את האתר עכשיו</button>
+  
+  <div id="progress" class="progress" style="display:none"></div>
+  <div id="countdown" class="countdown" style="display:none"></div>
+  
+  <div class="help">
+    <h3>💡 אם זה לא עוזר (iOS Safari אגרסיבי במיוחד)</h3>
+    <b>iPhone:</b>
+    <ol>
+      <li>סגור לגמרי את Safari (App Switcher → swipe up על ה-Safari)</li>
+      <li>אם התקנת PWA על המסך הראשי — מחק אותו (לחץ-ארוך → Delete App)</li>
+      <li>Settings → Safari → Advanced → Website Data → חפש <b>t1ptip</b> → swipe → Delete</li>
+      <li>פתח Safari מחדש ולך ל-<b>https://t1ptip.github.io/palette-ai-v2/</b></li>
+    </ol>
+    <br>
+    <b>Android Chrome:</b>
+    <ol>
+      <li>Chrome → 3 נקודות → Settings → Site settings → All sites</li>
+      <li>חפש <b>t1ptip.github.io</b> → לחץ עליו → "Clear & reset"</li>
+      <li>פתח טאב חדש ולך לאתר</li>
+    </ol>
+  </div>
+  
+  <div class="footer">v3.0 cache-buster · <span id="ts"></span></div>
+</div>
+
+<script>
+const TARGET = 'https://t1ptip.github.io/palette-ai-v2/';
+const log = (msg, cls) => {
+  const p = document.getElementById('progress');
+  p.style.display = 'block';
+  const span = cls ? `<span class="${cls}">${msg}</span>` : msg;
+  p.innerHTML += span + '\n';
+  p.scrollTop = p.scrollHeight;
+};
+
+document.getElementById('ts').textContent = new Date().toISOString().substring(0,19);
+
+async function checkStatus() {
+  const status = document.getElementById('status');
+  let html = '';
+  
+  // Check SW support
+  if (!('serviceWorker' in navigator)) {
+    html += `<div class="status-row"><span class="icon">❌</span><span class="label">Service Workers</span><span class="value bad">לא נתמך</span></div>`;
+    status.innerHTML = html;
+    return;
+  }
+  
+  // SW registrations
+  const regs = await navigator.serviceWorker.getRegistrations();
+  const ourRegs = regs.filter(r => (r.scope || '').includes('palette-ai-v2'));
+  html += `<div class="status-row"><span class="icon">${ourRegs.length > 0 ? '📦' : '○'}</span><span class="label">SW Registrations</span><span class="value">${ourRegs.length}</span></div>`;
+  
+  if (ourRegs.length > 0) {
+    const reg = ourRegs[0];
+    const sw = reg.active || reg.waiting || reg.installing;
+    if (sw) {
+      const url = sw.scriptURL || '';
+      const state = sw.state || '?';
+      html += `<div class="status-row"><span class="icon">🔧</span><span class="label">SW state</span><span class="value">${state}</span></div>`;
+    }
+  }
+  
+  // Caches
+  if ('caches' in window) {
+    try {
+      const keys = await caches.keys();
+      const ours = keys.filter(k => k.includes('palette'));
+      html += `<div class="status-row"><span class="icon">${ours.length > 0 ? '💾' : '○'}</span><span class="label">Caches</span><span class="value">${ours.length}</span></div>`;
+      ours.forEach(k => {
+        const isV3 = k.includes('v3.0');
+        const isV29 = k.includes('v2.9');
+        const cls = isV3 ? '' : (isV29 ? 'warn' : '');
+        const icon = isV3 ? '✅' : (isV29 ? '⚠️' : '📦');
+        html += `<div class="status-row"><span class="icon">${icon}</span><span class="label">&nbsp;&nbsp;${k}</span><span class="value ${cls}">${isV3 ? 'NEW' : (isV29 ? 'OLD' : '?')}</span></div>`;
+      });
+    } catch(e) {
+      html += `<div class="status-row"><span class="icon">❌</span><span class="label">Caches</span><span class="value bad">${e.message}</span></div>`;
+    }
+  }
+  
+  // localStorage size
+  try {
+    let lsSize = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) lsSize += (localStorage[key].length + key.length);
+    }
+    html += `<div class="status-row"><span class="icon">📝</span><span class="label">localStorage</span><span class="value">${(lsSize/1024).toFixed(1)} KB</span></div>`;
+  } catch(e) {}
+  
+  status.innerHTML = html;
+}
+
+async function clearEverything() {
+  const btn = document.getElementById('btnClear');
+  btn.disabled = true;
+  btn.textContent = '⏳ מנקה...';
+  
+  document.getElementById('progress').innerHTML = '';
+  log('🧹 מתחיל ניקוי...');
+  
+  // 1. Unregister all service workers
+  if ('serviceWorker' in navigator) {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      log(`📦 נמצאו ${regs.length} SW registrations`);
+      for (const r of regs) {
+        try {
+          const ok = await r.unregister();
+          log(`  ${ok ? '✅' : '❌'} unregistered: ${r.scope}`);
+        } catch(e) {
+          log(`  ❌ failed: ${r.scope}: ${e.message}`, 'err');
+        }
+      }
+    } catch(e) {
+      log(`❌ SW error: ${e.message}`, 'err');
+    }
+  }
+  
+  // 2. Delete all caches
+  if ('caches' in window) {
+    try {
+      const keys = await caches.keys();
+      log(`💾 נמצאו ${keys.length} caches`);
+      for (const k of keys) {
+        try {
+          const ok = await caches.delete(k);
+          log(`  ${ok ? '✅' : '❌'} deleted: ${k}`);
+        } catch(e) {
+          log(`  ❌ failed: ${k}: ${e.message}`, 'err');
+        }
+      }
+    } catch(e) {
+      log(`❌ caches error: ${e.message}`, 'err');
+    }
+  }
+  
+  // 3. Clear localStorage (only Palette-related keys)
+  try {
+    const paletteKeys = [];
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key) && (key.startsWith('pae') || key.startsWith('sbp_'))) {
+        paletteKeys.push(key);
+      }
+    }
+    log(`📝 ${paletteKeys.length} מפתחות ב-localStorage (משאיר אותם — לא מוחק היסטוריה)`);
+    log(`   (אם תרצה למחוק גם אותם, רענן + לחץ שוב + warn אם תרצה)`, 'warn');
+  } catch(e) {}
+  
+  // 4. Clear sessionStorage
+  try {
+    sessionStorage.clear();
+    log('✅ sessionStorage נוקה');
+  } catch(e) {}
+  
+  log('');
+  log('✅ הניקוי הושלם!');
+  log('🚀 מעביר אותך לאתר תוך 5 שניות...');
+  
+  // Show countdown
+  const cd = document.getElementById('countdown');
+  cd.style.display = 'block';
+  let n = 5;
+  cd.textContent = n;
+  const interval = setInterval(() => {
+    n--;
+    cd.textContent = n;
+    if (n <= 0) {
+      clearInterval(interval);
+      // Use replace + cache-buster query param
+      window.location.replace(TARGET + '?_v3_refresh=' + Date.now());
+    }
+  }, 1000);
+  
+  // Also show manual button
+  document.getElementById('btnGo').style.display = 'block';
+  document.getElementById('btnGo').onclick = () => {
+    window.location.replace(TARGET + '?_v3_refresh=' + Date.now());
+  };
+}
+
+document.getElementById('btnClear').addEventListener('click', clearEverything);
+
+// Run status check on load
+checkStatus();
+</script>
+</body>
+</html>
