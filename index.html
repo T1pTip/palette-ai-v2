@@ -34,7 +34,15 @@
   window.addEventListener('load', function() {
     setTimeout(function() { try { sessionStorage.removeItem(KEY); } catch(e) {} }, 3000);
   });
-  // 4. On startup, prompt any waiting SW to activate immediately (covers tabs already open during deploy)
+  // 4. CRITICAL FIX (S21.5, 2026-05-08): register the service worker.
+  //    Without this call, NO SW ever installs — explaining why mobile users (esp. Vivaldi) were stuck.
+  //    updateViaCache: 'none' forces browser to fetch sw.js from network on every page load,
+  //    bypassing GitHub Pages' default Cache-Control: max-age=600. Required for transparent updates.
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then(function(reg) { try { console.log('[pae-sw] registered, scope:', reg.scope); } catch(e) {} })
+    .catch(function(err) { try { console.warn('[pae-sw] register failed:', err && err.message); } catch(e) {} });
+
+  // 5. On startup, prompt any waiting SW to activate immediately (covers tabs already open during deploy)
   navigator.serviceWorker.ready.then(function(reg) {
     if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
     reg.addEventListener('updatefound', function() {
