@@ -19,6 +19,7 @@
   --bg: #08080f;
   --surface: #0f0f1a;
   --surface2: #16162a;
+  --bg2: #16162a;
   --border: rgba(255,255,255,0.07);
   --accent: #007aff;
   --teal: #00e5cc;
@@ -37,6 +38,7 @@
 .cat-pill-more .cat-name { font-style: italic; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { overflow-x: hidden !important; max-width: 100vw !important; }
+html { background: var(--bg); }
 /* S17: Prevent 2px overflow on app children */
 *, *::before, *::after { box-sizing: border-box; }
 .app { max-width: 100vw !important; box-sizing: border-box !important; overflow-x: hidden !important; }
@@ -78,6 +80,16 @@ body {
 .lang-toggle { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 2px; gap: 3px; flex-shrink: 0; align-items: center; }
 .lang-btn { background: transparent; border: none; color: var(--muted); font-family: 'Rubik', system-ui, -apple-system, Arial, sans-serif; font-size: 11px; font-weight: 600; padding: 5px 8px; min-height: 44px; cursor: pointer; transition: all 0.15s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 .lang-btn.active { background: var(--accent); color: #fff; }
+
+/* === BUG-PAE-014 fix: mobile header overflow (2026-05-07) ===
+   On narrow viewports (~256-480px), lang-toggle (~173px wide) + title + help-btn
+   overflow header-top horizontally. Allow wrap + tighten margins. */
+@media (max-width: 480px) {
+  .header-top { flex-wrap: wrap; row-gap: 4px; }
+  .lang-toggle { margin-inline-start: auto; flex-shrink: 1; min-width: 0; }
+  #paeHelpBtn { margin-inline-start: 8px !important; }
+  #themeToggleBtn { margin-inline-start: 8px !important; }
+}
 
 /* ── App layout ── */
 .app { display: grid; grid-template-columns: 1fr; }
@@ -246,7 +258,7 @@ body {
 .fmt-btn:active{opacity:.8}
 
 .cm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
-.cm-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.cm-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 .cm-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px}
 .cm-msg{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5}
 .cm-tags{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-height:180px;overflow-y:auto}
@@ -267,6 +279,42 @@ body {
 .clr-all{border-color:#7f1d1d;color:#f87171;background:#1c0a0a}
 .clr-cancel{color:var(--muted);font-weight:400}
 
+/* === S1: Variants Generator (2026-05-06) === */
+.var-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.var-overlay.show{display:flex;animation:varFadeIn .18s ease}
+@keyframes varFadeIn{from{opacity:0}to{opacity:1}}
+.var-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:varSlideUp .22s ease}
+@keyframes varSlideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.var-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;text-align:center}
+.var-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px;text-align:center;line-height:1.5}
+.var-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.var-card{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;cursor:pointer;text-align:right;display:flex;flex-direction:column;gap:4px;min-height:54px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.var-card:hover{border-color:var(--a4);background:var(--a1)}
+.var-card:active{opacity:.8;transform:scale(.98)}
+[dir="ltr"] .var-card{text-align:left}
+.var-card-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.var-card-emoji{font-size:18px;line-height:1}
+.var-card-preview{font-size:11px;color:var(--muted);line-height:1.4;font-family:'JetBrains Mono',monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.var-card-random{border-style:dashed;border-color:var(--border);background:transparent}
+.var-card-random:hover{border-color:var(--accent);background:var(--a1)}
+.var-card-random .var-card-preview{display:none}
+.var-cancel{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;min-height:44px;touch-action:manipulation}
+.var-cancel:active{opacity:.7}
+[data-theme="light"] .var-card{background:var(--surface2);color:var(--text)}
+[data-theme="light"] .var-card:hover{background:rgba(0,122,255,.06)}
+[data-theme="light"] .var-card-random{background:transparent}
+
+/* === S2: Engine Adapter (2026-05-06) === */
+.engine-bar{display:flex;align-items:center;gap:8px;padding:4px 0 6px;font-size:12px;flex-wrap:wrap}
+.engine-label{color:var(--muted);font-size:11px;font-weight:500}
+.engine-pick{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);cursor:pointer;font-size:12px;font-weight:500;font-family:inherit;min-height:36px;display:flex;align-items:center;gap:6px;transition:all .15s;touch-action:manipulation}
+.engine-pick:hover{border-color:var(--a4);background:var(--a1)}
+.engine-pick:active{opacity:.85}
+.engine-chevron{font-size:9px;color:var(--muted);line-height:1}
+.eng-card-active{border-color:var(--accent)!important;background:var(--a2)!important}
+[data-theme="light"] .engine-pick{background:var(--surface2);color:var(--text)}
+[data-theme="light"] .engine-pick:hover{background:rgba(0,122,255,.06)}
+
 /* ── PayBox Floating Button ── */
 .pb-float{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#1a0f00;border:1px solid rgba(255,165,0,0.2);border-radius:var(--r);cursor:pointer;width:100%;transition:background .15s;touch-action:manipulation;min-height:52px;font-family:'Rubik',sans-serif;direction:rtl;text-align:right}
 .pb-float:active{background:#241400}
@@ -276,7 +324,36 @@ body {
 .pb-float-title{font-size:13px;font-weight:700;color:#FFB800;line-height:1.3}
 .pb-float-sub{font-size:11px;color:#a07840;line-height:1.3}
 
-      /* ── Minimal Mode Toggle Button (Session 8) ── */
+/* === LIGHT THEME OVERRIDES (S0 - Theme Audit & Fix, 2026-05-06) === */
+[data-theme="light"] #toast { background: rgba(40, 40, 60, 0.95); }
+[data-theme="light"] .pb-float { background: #fffaf0; border-color: rgba(200, 130, 0, 0.3); }
+[data-theme="light"] .pb-float:active { background: #fff5e0; }
+[data-theme="light"] .pb-float-emoji-wrap { background: rgba(255, 140, 0, 0.15); }
+[data-theme="light"] .pb-float-title { color: #cc7700; }
+[data-theme="light"] .pb-float-sub { color: #806040; }
+[data-theme="light"] .clr-all { border-color: rgba(220, 100, 100, 0.4); color: #c33; background: #fee2e2; }
+[data-theme="light"] .cm-yes { background: #d4edda; color: #155724; border: 1px solid #a8d5b1; }
+[data-theme="light"] .cm-no { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+[data-theme="light"] .toggle-minimal-btn { background: rgba(0,0,0,0.04); border-color: var(--border); color: var(--text); }
+[data-theme="light"] .toggle-minimal-btn:hover { background: rgba(0,0,0,0.08); border-color: var(--muted); }
+[data-theme="light"] .toggle-minimal-btn .count-badge { background: rgba(0,122,255,0.12); color: var(--accent); }
+[data-theme="light"] .settings-btn { background: rgba(0,0,0,0.04); border-color: var(--border); color: var(--text); }
+[data-theme="light"] .settings-btn:hover { background: rgba(0,0,0,0.08); }
+[data-theme="light"] .settings-modal { background: rgba(0,0,0,0.5); }
+[data-theme="light"] .settings-modal-content { background: var(--surface); border-color: var(--border); color: var(--text); }
+[data-theme="light"] .settings-row { border-bottom-color: var(--border); }
+[data-theme="light"] .settings-row .settings-sub { color: var(--muted); }
+[data-theme="light"] .settings-cancel { background: var(--surface2); color: var(--text); }
+[data-theme="light"] .settings-cancel:hover { background: var(--border); }
+[data-theme="light"] .install-banner { background: linear-gradient(135deg, rgba(0,122,255,0.08), rgba(0,229,204,0.04)); }
+[data-theme="light"] .install-text strong { color: var(--text); }
+[data-theme="light"] .install-banner .install-text { color: var(--text); }
+[data-theme="light"] .ios-hint { background: var(--surface); border-color: var(--border); color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+[data-theme="light"] .header-title { color: var(--text); }
+[data-theme="light"] .btn-copy.copied { background: #1a8a3a; }
+[data-theme="light"] .tag-btn-sub { color: var(--muted); }
+
+/* ── Minimal Mode Toggle Button (Session 8) ── */
       .toggle-minimal-btn {
         display: flex; align-items: center; justify-content: center; gap: 8px;
         width: 100%; max-width: 320px; margin: 16px auto;
@@ -353,6 +430,15 @@ body {
 
   .fmt-btn { min-height: 44px !important; min-width: 72px !important; }
   .ob-close { min-width: 44px !important; min-height: 44px !important; }
+
+  /* S18 (deploy QA): WCAG 2.2 AA touch target fixes — interactive buttons to 44px */
+  .hist-clear { min-height: 44px !important; min-width: 44px !important; }
+  .ar-btn { min-height: 44px !important; }
+  .engine-pick { min-height: 44px !important; }
+  .engine-tab { min-height: 44px !important; }
+  .var-cancel { min-height: 44px !important; }
+  .ms-bar-btn { min-height: 44px !important; }
+  .wn-modal-close { min-height: 44px !important; }
   
   /* Settings Button — top-right */
   .settings-btn {
@@ -490,17 +576,17 @@ body {
 
   <!-- SEO & Social Meta (v5) -->
   <meta name="description" content="בנאי פרומפטים חכם לתמונות AI — ממיר בקשה בעברית לפרומפט מלא ומשופר עם תמיכה מיוחדת לטקסט עברי.">
-  <link rel="canonical" href="https://t1ptip.github.io/palette-ai/">
+  <link rel="canonical" href="https://t1ptip.github.io/palette-ai-v2/">
   <meta property="og:title" content="Palette AI — בנאי פרומפטים חכם לתמונות AI">
   <meta property="og:description" content="בנאי פרומפטים לתמונות AI עם תמיכה מלאה בעברית, לרבות טיפול בטקסט עברי בתמונה.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://t1ptip.github.io/palette-ai/">
-  <meta property="og:image" content="https://t1ptip.github.io/palette-ai/icon-512.png">
+  <meta property="og:url" content="https://t1ptip.github.io/palette-ai-v2/">
+  <meta property="og:image" content="https://t1ptip.github.io/palette-ai-v2/icon-512.png">
   <meta property="og:locale" content="he_IL">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Palette AI">
   <meta name="twitter:description" content="בנאי פרומפטים לתמונות AI עם תמיכה בעברית.">
-  <meta name="twitter:image" content="https://t1ptip.github.io/palette-ai/icon-192.png">
+  <meta name="twitter:image" content="https://t1ptip.github.io/palette-ai-v2/icon-192.png">
 </head>
 <body data-new-gr-c-s-check-loaded="14.1284.0" data-gr-ext-installed="">
 <main role="main" style="display:contents">
@@ -604,7 +690,7 @@ body {
           <span class="kids-title" id="kidsBtnTitle">כפתור לילדים</span>
           <span class="kids-sub" id="kidsBtnSub">מצב קסום</span>
         </button>
-        <button class="btn-rnd-main" id="randomBtn" onclick="randomize()">
+        <button class="btn-rnd-main" id="randomBtn" onclick="openVariantsModal()">
           <span id="randomBtnLabel">🎁 הפתעה!</span>
           <span id="randomHint">ריק? נביא לך רעיון ✨</span>
         </button>
@@ -2104,16 +2190,140 @@ function clearHistory() {
 // ── Randomize ──────────────────────────────────────────────────
 function randomizeKids() {
   const inputEl = $('userInput');
+  // S16 (2026-05-07): Pool expanded 8→60 per language; anti-repeat avoids immediate duplicate
   const kidsSubjects = {
-    he: ['חתול אסטרונאוט בחלל הכוכבים','דינוזאור ורוד עם כנפי פרפר צבעוניות','ארמון ממתקים וגלידה',
-         'גור כלבים עם עטרת נסיך','דרקון חמוד שמנשף בועות סבון','ילדה רוכבת על חד קרן קשת',
-         'רובוט קטן שמשחק בגינה','ספינת חלל עם חיות חמודות'],
-    en: ['Astronaut cat in colorful space','Pink dinosaur with rainbow butterfly wings','Castle made of candy and ice cream',
-         'Puppy wearing a prince crown','Cute dragon blowing soap bubbles','Girl riding a rainbow unicorn',
-         'Small robot playing in the garden','Spaceship with cute animals inside']
+    he: [
+      'חתול אסטרונאוט בחלל הכוכבים',
+      'דינוזאור ורוד עם כנפי פרפר צבעוניות',
+      'ארמון ממתקים וגלידה',
+      'גור כלבים עם עטרת נסיך',
+      'דרקון חמוד שמנשף בועות סבון',
+      'ילדה רוכבת על חד קרן קשת',
+      'רובוט קטן שמשחק בגינה',
+      'ספינת חלל עם חיות חמודות',
+      'דובי גומי על רכבת רכבל',
+      'שני חברים בעלי אוזני ארנב על אופניים',
+      'בית בצורת פטרייה צבעונית ביער',
+      'ילדה מנגנת על נבל קטן בענן',
+      'גמד נחמד אופה עוגה בקדרת זהב',
+      'צב סופר גיבור עם גלימה',
+      'תוכי לימון על גביע גלידה',
+      'שועל זוהר במערה כספית',
+      'דובי פנדה לבוש תחפושת מסיכה',
+      'ינשוף קטן עם משקפי קסם',
+      'דרקון תינוק מקפץ בערמת פרחים',
+      'ילדה במעיל ורוד רוקדת בגן',
+      'ארנבון פרוותי לובש כובע גבוה',
+      'ספינה ענקית עם חיות מאוחדות',
+      'נחש זוהר על ענף עץ ממתקים',
+      'נסיכה קטנה מטיילת על שביל קשת',
+      'תינוק קוף משחק עם בלון',
+      'גן עם פרחים מצחיקים שצוחקים',
+      'כלבלב לוחם נינג׳ה עם חרב',
+      'תרנגולון על תופים זעירים',
+      'דובון בים גלים זוהר',
+      'אריה קטן עם רעמה צבעונית',
+      'ילדה קטנה רוכבת על סוס פוני',
+      'דובים תאומים אוכלים פנקייקים',
+      'בלון פורח עם בית קסום בפנים',
+      'נער קוסם מצמיח עץ קסום',
+      'סבתא דובה אורגת בכיסא נדנדה',
+      'דבורה ידידותית עם פנס זעיר',
+      'תוכי על כתף פיראט קטנטן וחמוד',
+      'דובי פנדה בשורה של תפוחים',
+      'דרור זמר על ענף תות שדה',
+      'ארנב קסום עם שעון מרוץ ענק',
+      'ילד קטן מתעופף עם בלונים',
+      'גלגל ענק בארץ הממתקים',
+      'דובון לוחם בלבוש סמוראי',
+      'ילדה קטנה עם פיה זוהרת',
+      'כלבלב פושט יד לאסטרואידים',
+      'סוס פרא חינני על שביל קשת',
+      'ילד שותה כוס חלב חמה',
+      'ארנבון יושב בכוס תה',
+      'עכבר רכוב על חתול ידידותי',
+      'צב גלידה עם קישוטי שוקולד',
+      'גור פנדה במגלשת מים',
+      'דובים אופים פיצה רחבה',
+      'אופניים מעופפים מעל קשת',
+      'נמלים מארגנות מסיבת תה',
+      'תרנגול שר בכובע אופרה',
+      'אווז משחק בכדור פרחים',
+      'דרקונים תינוקות עם בלונים',
+      'צב טייס במטוס נייר צבעוני',
+      'גמד זמר על במה מפלסטיק',
+      'סנאי על עגלת אגוזים'
+    ],
+    en: [
+      'Astronaut cat in starry space',
+      'Pink dinosaur with rainbow butterfly wings',
+      'Castle made of candy and ice cream',
+      'Puppy wearing a prince crown',
+      'Cute dragon blowing soap bubbles',
+      'Girl riding a rainbow unicorn',
+      'Small robot playing in the garden',
+      'Spaceship with cute animals inside',
+      'Gummy bear on a cable car',
+      'Two bunny-eared friends on bikes',
+      'Mushroom-shaped colorful house in a forest',
+      'Girl playing a tiny harp on a cloud',
+      'Sweet gnome baking a cake in a golden cauldron',
+      'Superhero turtle with a cape',
+      'Lemon parrot on an ice cream cone',
+      'Glowing fox in a silver cave',
+      'Panda dressed in a costume mask',
+      'Tiny owl with magic glasses',
+      'Baby dragon hopping in a flower pile',
+      'Girl in a pink coat dancing in a garden',
+      'Furry bunny wearing a tall hat',
+      'Giant ship full of friendly animals',
+      'Glowing snake on a candy tree branch',
+      'Tiny princess walking on a rainbow path',
+      'Baby monkey playing with a balloon',
+      'Garden with funny laughing flowers',
+      'Ninja warrior puppy with a wooden sword',
+      'Tiny rooster on tiny drums',
+      'Bear cub in glowing waves',
+      'Small lion with rainbow mane',
+      'Tiny native girl riding a pony',
+      'Twin bears eating pancakes',
+      'Hot air balloon with a magical house inside',
+      'Wizard boy growing a magical tree',
+      'Grandma bear knitting in a rocking chair',
+      'Friendly bee with a tiny lantern',
+      'Tiny pirate parrot on a rainbow path',
+      'Panda among rows of apples',
+      'Singing finch on a strawberry branch',
+      'Magic rabbit with a giant stopwatch',
+      'Small child floating with balloons',
+      'Ferris wheel in candy land',
+      'Bear cub in samurai armor',
+      'Small girl with a glowing fairy',
+      'Puppy reaching for asteroids',
+      'Graceful wild horse on a rainbow path',
+      'Boy drinking warm milk in a glass',
+      'Bunny sitting in a teacup',
+      'Mouse riding a friendly cat',
+      'Ice cream turtle with chocolate sprinkles',
+      'Panda cub on a water slide',
+      'Bears baking a wide pizza',
+      'Flying bicycle over a rainbow',
+      'Ants organizing a tea party',
+      'Singing rooster in an opera hat',
+      'Goose playing with a flower ball',
+      'Baby dragons with balloons',
+      'Pilot turtle in a paper airplane',
+      'Singing gnome on a plastic stage',
+      'Squirrel on a nut wagon'
+    ]
   };
+  if (typeof window.__paeKidsLastIdx === 'undefined') window.__paeKidsLastIdx = -1;
   const list = kidsSubjects[currentLang] || kidsSubjects.he;
-  inputEl.value = list[Math.floor(Math.random() * list.length)];
+  let _kidsIdx;
+  do { _kidsIdx = Math.floor(Math.random() * list.length); }
+  while (_kidsIdx === window.__paeKidsLastIdx && list.length > 1);
+  window.__paeKidsLastIdx = _kidsIdx;
+  inputEl.value = list[_kidsIdx];
   const kidsTags = [
     'anime style, manga art, studio ghibli inspired',
     'Disney animation style, Disney character art, expressive eyes, smooth clean lines, magical Disney aesthetic',
@@ -2157,17 +2367,141 @@ function randomize() {
   try {
     const inputEl = $('userInput');
     let userInput = inputEl.value.toLowerCase().trim();
+    // S16 (2026-05-07): Pool expanded 8→60 per language; anti-repeat avoids immediate duplicate
     const subjects = {
-      he: ['חתול אסטרונאוט בחלל','דרקון גלידה צבעוני','עיר עתידנית מתחת למים',
-           'רובוט חמוד שמחבק דובי','טירה קסומה על ענן','מכונית מירוץ על מאדים',
-           'גיבור על בצורת אבוקדו','פיל מעופף עם כנפי פרפר'],
-      en: ['Astronaut cat in space','Colorful ice cream dragon','Futuristic underwater city',
-           'Cute robot hugging a teddy bear','Magical castle on a cloud','Race car on Mars',
-           'Avocado superhero','Flying elephant with butterfly wings']
+      he: [
+        'חתול אסטרונאוט בחלל',
+        'דרקון גלידה צבעוני',
+        'עיר עתידנית מתחת למים',
+        'רובוט חמוד שמחבק דובי',
+        'טירה קסומה על ענן',
+        'מכונית מירוץ על מאדים',
+        'גיבור על בצורת אבוקדו',
+        'פיל מעופף עם כנפי פרפר',
+        'ספינת אוויר מעל יער קסום',
+        'אישה במעיל אדום ביער שלג',
+        'עיר ניאון תחת גשם זרחני',
+        'סוס לבן רץ על גלי הים',
+        'אסטרונאוט מתבונן בכדור הארץ מהירח',
+        'רחוב יפני בלילה עם פנסים אדומים',
+        'חצר זן עם דובדבן פורח',
+        'בית עץ קסום על אלון ענק',
+        'דייג בסירה ערפילית בבוקר',
+        'רחוב פריזאי גשום בערב',
+        'גורד שחקים עטוף ערפל',
+        'שודד ים על סיפון ספינה',
+        'אישה מהודרת בליל גשם',
+        'כדור פורח מעל הרים שלג',
+        'גן קקטוסים בשקיעה זהובה',
+        'גלגל ענק בלונה פארק לילה',
+        'סצנת קפה ברומא עתיקה',
+        'אופנועי רטרו בכביש מדברי',
+        'תה אחר צהריים בגינה אנגלית',
+        'תוכי טרופי על ענף קוקוס',
+        'רחוב מסעדות באיטליה',
+        'מצפה כוכבים בלילה מזהיר',
+        'דרקון אגדי על קצה הר געש',
+        'ספריה ענקית עם אלפי ספרים',
+        'שוק מכשפים מימי הביניים',
+        'זאב כסוף בליל ירח מלא',
+        'ינשוף חכם על ענף בלילה',
+        'נפח חורט אבן בכפר נורדי',
+        'ספינה בים סוער עם ברקים',
+        'גן בוטני חלומי עם פרפרים',
+        'רכב חלל מעל גלקסיה ספירלית',
+        'רחוב לונדוני ערפילי במאה ה-19',
+        'צייר עם כן ציור מול האקרופוליס',
+        'נחיל פרפרים מעל אגם רגוע',
+        'קוסמת צעירה מטילה כישוף זוהר',
+        'אנדרואיד מחזיק פרח אדום',
+        'כרכרה ליד מגדל אייפל',
+        'סמוראי בעיר טוקיו עתידנית',
+        'גמל בודד במדבר חולות',
+        'שעון רטרו על מצוק בשמיים סגולים',
+        'דבורה זוהרת מאביקה פרח אקזוטי',
+        'רקדן מסכה ונציאני בקרנבל',
+        'רחפן מעל גלי טוקיו בלילה',
+        'ילדה קטנה מתבוננת בנברשת חלומית',
+        'צמח טורף ענק עם שיניים',
+        'דרקון מים מעופף בים סוער',
+        'נמר לבן בג׳ונגל מואר בלילה',
+        'ארמון על קצה צוק בים האדום',
+        'רוכב אופניים בכביש כפרי בסתיו',
+        'נמר על גג כנסיה גותית',
+        'רובוט נגן פסנתר באולם הופעות',
+        'סופרת עם מעיל ארוך על מצוק'
+      ],
+      en: [
+        'Astronaut cat in space',
+        'Colorful ice cream dragon',
+        'Futuristic underwater city',
+        'Cute robot hugging a teddy bear',
+        'Magical castle on a cloud',
+        'Race car on Mars',
+        'Avocado superhero',
+        'Flying elephant with butterfly wings',
+        'Airship over a magical forest',
+        'Woman in a red coat in a snowy forest',
+        'Neon city under phosphorescent rain',
+        'White horse running on ocean waves',
+        'Astronaut watching Earth from the moon',
+        'Japanese street at night with red lanterns',
+        'Zen courtyard with cherry blossoms',
+        'Magical treehouse on a giant oak',
+        'Fisherman in a foggy boat at dawn',
+        'Rainy Parisian street in the evening',
+        'Skyscraper wrapped in fog',
+        'Pirate on a ship deck',
+        'Stylish woman on a rainy night',
+        'Hot air balloon over snowy mountains',
+        'Cactus garden at golden sunset',
+        'Ferris wheel at a night amusement park',
+        'Coffee scene in ancient Rome',
+        'Retro motorcycles on a desert highway',
+        'Afternoon tea in an English garden',
+        'Tropical parrot on a coconut branch',
+        'Restaurant street in Italy',
+        'Observatory under a bright starry night',
+        'Legendary dragon at a volcano edge',
+        'Giant library with thousands of books',
+        'Medieval witches market',
+        'Silver wolf on a full moon night',
+        'Wise owl on a branch at night',
+        'Blacksmith forging stone in a Nordic village',
+        'Ship in a stormy sea with lightning',
+        'Dreamy botanical garden with butterflies',
+        'Spacecraft over a spiral galaxy',
+        'Foggy 19th century London street',
+        'Painter with easel facing the Acropolis',
+        'Swarm of butterflies above a calm lake',
+        'Young sorceress casting a glowing spell',
+        'Android holding a red flower',
+        'Carriage near the Eiffel Tower',
+        'Samurai in a futuristic Tokyo',
+        'Lonely camel in a sand desert',
+        'Retro clock on a cliff in purple skies',
+        'Glowing bee pollinating an exotic flower',
+        'Venetian masked dancer at carnival',
+        'Drone over Tokyo waves at night',
+        'Small girl gazing at a dreamy chandelier',
+        'Giant carnivorous plant with teeth',
+        'Water dragon flying over stormy seas',
+        'White tiger in a jungle lit at night',
+        'Palace on a cliff edge by the Red Sea',
+        'Cyclist on a country road in autumn',
+        'Black panther on a Gothic church roof',
+        'Robot pianist in a concert hall',
+        'Writer in a long coat on a cliff'
+      ]
     };
     if (!userInput) {
+      if (typeof window.__paeAdultLastIdx === 'undefined') window.__paeAdultLastIdx = -1;
       const list = subjects[currentLang] || subjects.en;
-      inputEl.value = list[Math.floor(Math.random() * list.length)];
+      let _adultIdx;
+      do { _adultIdx = Math.floor(Math.random() * list.length); }
+      while (_adultIdx === window.__paeAdultLastIdx && list.length > 1);
+      window.__paeAdultLastIdx = _adultIdx;
+      inputEl.value = list[_adultIdx];
       userInput = inputEl.value.toLowerCase();
     }
     selected.clear();
@@ -2299,7 +2633,7 @@ function startApp() {
 
 // ── Service Worker ────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/palette-ai/sw.js', { scope: '/palette-ai/' }).catch(function() {});
+  navigator.serviceWorker.register('/palette-ai-v2/sw.js', { scope: '/palette-ai-v2/' }).catch(function() {});
 }
 
 if (document.readyState === 'loading') {
@@ -3209,1340 +3543,1816 @@ if (document.readyState === 'loading') {
 <!-- v2: all v6.2-v7.9.1 patches consolidated into pae-v2-module.js -->
 <script src="pae-v2-module.js"></script>
 <!--V2_CONSOLIDATED_START-->
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.9.1 */
-  (function() {
-    if (window.__paeV791Installed) { return; }
-    window.__paeV791Installed = true;
-    var _log = function(m) { try { console.log('[pae-v791]', m); } catch(e){} };
-    
-    // v7.9.1 FIX: The signature M letter was being cut off.
-    // Root cause 1: SVG inherited dir=rtl from parent modal, causing text to flip.
-    // Root cause 2: viewBox 0 0 340 110 was too narrow for letters at these x positions.
-    // Fix: Force direction:ltr on SVG + widen viewBox + reposition letters.
-    
-    function fixSignature() {
-      var svgs = document.querySelectorAll('.pae-sig-svg');
-      svgs.forEach(function(svg) {
-        svg.style.direction = 'ltr';
-        svg.setAttribute('viewBox', '0 0 280 100');
-        var positions = {
-          'paeSigM': 10,
-          'paeSigO': 70,
-          'paeSigR': 115,
-          'paeSigA': 148,
-          'paeSigN': 192
-        };
-        Object.keys(positions).forEach(function(id) {
-          var el = svg.querySelector('#' + id);
-          if (el) {
-            el.setAttribute('x', positions[id]);
-            el.setAttribute('y', 70);
-          }
-        });
-      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Video Mode Module -->
+<script src="pae-video-module.js" defer></script>
+
+<!-- S1: Variants Generator (2026-05-06) -->
+<style>
+/* === Shared Modal Styles (S1, S2, S3, S11) === */
+.var-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.var-overlay.show{display:flex;animation:varFade .2s ease}
+@keyframes varFade{from{opacity:0}to{opacity:1}}
+.var-box{background:var(--surface);border:1px solid var(--a3);border-radius:12px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:18px 20px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.var-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.var-subtitle{font-size:11.5px;color:var(--muted);margin-bottom:14px;line-height:1.4}
+.var-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.var-card{background:var(--surface2);border:1px solid var(--border);color:var(--text);text-align:start;padding:10px 12px;border-radius:8px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;gap:4px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.var-card:hover{border-color:var(--a4);background:var(--a1);transform:translateY(-1px)}
+.var-card:active{opacity:.85;transform:translateY(0)}
+.var-card.eng-card-active{border-color:var(--accent);background:var(--a2)}
+.var-card-head{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px}
+.var-card-emoji{font-size:18px;line-height:1;flex-shrink:0}
+.var-card-preview{font-size:10.5px;color:var(--muted);line-height:1.4;word-break:break-word}
+.var-card-random{background:linear-gradient(135deg,var(--a1),var(--a2));border-color:var(--a3)}
+.var-card-random:hover{background:linear-gradient(135deg,var(--a2),var(--a3))}
+.var-cancel{display:block;width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:500;touch-action:manipulation;min-height:38px}
+.var-cancel:hover{border-color:var(--a3);color:var(--text)}
+[data-theme="light"] .var-box{background:var(--surface);border-color:var(--a4)}
+[data-theme="light"] .var-card{background:var(--surface2)}
+
+/* === Engine Tabs (S17 final 2026-05-07: inline buttons, no label, no modal) === */
+.engine-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:11px;margin-bottom:6px;flex-wrap:wrap}
+/* S18 (deploy QA): pae-v2 Layout B makes engineBar a direct child of .app via insertBefore.
+   Without explicit order, it defaults to 0 and appears at TOP of flex layout instead of
+   between result-box (order:6) and action-row (order:7). Fix: tie with result-box order. */
+.app > #engineBar { order: 6 !important; }
+/* S18 (UX cleanup): hide .vid-platform-row — the 3 external-link buttons (Kling/Pika/Runway)
+   are now redundant since the engine bar (#vidEngineBar) provides full engine selection.
+   Keeps the buttons in DOM (functional) but invisible in UI. User-requested 2026-05-08. */
+.vid-platform-row { display: none !important; }
+.engine-tab{background:transparent;border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:99px;cursor:pointer;font-family:inherit;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;gap:4px;min-height:28px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.engine-tab:hover{border-color:var(--a4);background:var(--a1)}
+.engine-tab:active{opacity:.85;transform:scale(.97)}
+.engine-tab.active{background:var(--a3);border-color:var(--accent);color:#fff}
+.engine-tab-emoji{font-size:13px;line-height:1}
+[data-theme="light"] .engine-tab.active{color:#fff}
+[data-theme="light"] .engine-bar{background:var(--surface2);border-color:var(--border)}
+</style>
+<script>
+(function(){
+  if (window.__variantsInstalled) return;
+  window.__variantsInstalled = true;
+
+  var VARIANT_TEMPLATES = {
+    realistic: {
+      emoji: '📸',
+      nameHe: 'ריאליסטי',
+      nameEn: 'Realistic',
+      suffix: ', professional photography, soft natural light, shallow depth of field, photorealistic, sharp 4K detail'
+    },
+    artistic: {
+      emoji: '🎨',
+      nameHe: 'אמנותי',
+      nameEn: 'Artistic',
+      suffix: ', watercolor painting style, pastel colors, dreamy aesthetic, soft brushstrokes'
+    },
+    cinematic: {
+      emoji: '🎬',
+      nameHe: 'קולנועי',
+      nameEn: 'Cinematic',
+      suffix: ', cinematic shot, golden hour lighting, anamorphic lens, film grain, dramatic shadows'
     }
-    
-    // Watch for signature being injected by v7.9 and fix it
-    var obs = new MutationObserver(function(muts) {
-      muts.forEach(function(m) {
-        m.addedNodes.forEach(function(node) {
-          if (node.nodeType === 1) {
-            if (node.classList && node.classList.contains('pae-sig-container')) {
-              setTimeout(fixSignature, 10);
-            } else if (node.querySelector && node.querySelector('.pae-sig-container')) {
-              setTimeout(fixSignature, 10);
-            }
-          }
-        });
-      });
+  };
+
+  var RANDOM_SUBJECTS_ADULT = [
+    'a small cat drinking coffee on a sunlit windowsill',
+    'an astronaut floating above a vibrant coral reef',
+    'a vintage red bicycle leaning against a Paris cafe',
+    'a wolf howling at the moon on a snowy mountain peak',
+    'a hot air balloon drifting over a Tuscan vineyard',
+    'a robot tending a futuristic Japanese garden',
+    'a steaming bowl of ramen on a rainy Tokyo night',
+    'a lighthouse standing on stormy cliffs at dawn'
+  ];
+  var RANDOM_SUBJECTS_KIDS = [
+    'a happy puppy chasing butterflies in a sunny meadow',
+    'a tiny dragon blowing soap bubbles in a candy kingdom',
+    'a cute baby panda playing in fresh snow',
+    'a friendly robot baking cookies in a colorful kitchen',
+    'a small fox running through a sparkling snow forest',
+    'a unicorn galloping through a field of rainbow flowers'
+  ];
+
+  var T = {
+    titleEmpty: { he: '🎁 בחר/י סגנון', en: '🎁 Pick a style' },
+    titleFilled: { he: '🎁 בחר/י סגנון לטקסט שלך', en: '🎁 Style your prompt' },
+    subEmpty:    { he: 'נבחר רעיון אקראי בסגנון המועדף', en: 'Random idea in your favorite style' },
+    subFilled:   { he: 'הטקסט שלך ב-3 גרסאות מקצועיות', en: 'Your text in 3 pro variants' },
+    randomCard:  { he: '🎲 אקראי לגמרי (החלף טקסט)', en: '🎲 Fully random (replace text)' },
+    cancel:      { he: 'ביטול', en: 'Cancel' }
+  };
+
+  function getLang(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
+  function tr(k){ var l = getLang(); return T[k] && T[k][l] || (T[k] && T[k].he) || k; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function isKidsMode(){
+    var k = document.getElementById('kidsBtn');
+    return !!(k && k.classList.contains('mode-active'));
+  }
+
+  function buildModal(){
+    if (document.getElementById('varOverlay')) return;
+    var html = ''
+      + '<div id="varOverlay" class="var-overlay" role="dialog" aria-modal="true" aria-labelledby="varTitle">'
+      +   '<div class="var-box">'
+      +     '<div class="var-title" id="varTitle"></div>'
+      +     '<div class="var-subtitle" id="varSubtitle"></div>'
+      +     '<div class="var-cards" id="varCards"></div>'
+      +     '<button type="button" class="var-cancel" id="varCancelBtn"></button>'
+      +   '</div>'
+      + '</div>';
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    document.body.appendChild(div.firstChild);
+    var ov = document.getElementById('varOverlay');
+    ov.addEventListener('click', function(e){ if (e.target === ov) closeVariantsModal(); });
+    document.getElementById('varCancelBtn').addEventListener('click', closeVariantsModal);
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && ov.classList.contains('show')) closeVariantsModal();
     });
-    obs.observe(document.body, { childList: true, subtree: true });
-    
-    // Also run immediately in case signature already present
-    fixSignature();
-    _log('v7.9.1 hotfix armed');
-  })();
-</script>
+  }
 
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.9 */
-  (function() {
-    if (window.__paeV79Installed) { return; }
-    window.__paeV79Installed = true;
-    var _log = function(m) { try { console.log('[pae-v79]', m); } catch(e){} };
-    
-    // === FIX 1: Typo in slide 1 Hebrew subtitle ===
-    // 'תמונות מאייד AI' -> 'תמונות בעזרת AI'
-    function fixSlide1Typo() {
-      if (!window.GUIDE_SLIDES && !window.__paeGuideSlidesPatched) {
-        // The GUIDE_SLIDES is inside v7.6 closure. Patch it by hooking renderGuide.
-        return false;
-      }
-      return true;
-    }
-    
-    // === FIX 2: Inject signature styles ===
-    function injectSignatureStyles() {
-      if (document.getElementById('__pae_v79_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v79_styles';
-      var css = '';
-      css += '.pae-sig-container { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px; padding-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; }';
-      css += '.pae-sig-label { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 1px; text-transform: uppercase; }';
-      css += '.pae-sig-svg { width: 160px; height: auto; max-width: 100%; }';
-      css += '.pae-sig-letter { fill: none; stroke: #d4af37; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(212,175,55,0.8)) drop-shadow(0 0 10px rgba(212,175,55,0.5)); }';
-      css += '.pae-sig-svg.pae-sig-animate #paeSigM { stroke-dasharray: 400; animation: paeSigDrawM 1s ease-in-out forwards; }';
-      css += '.pae-sig-svg.pae-sig-animate #paeSigO { stroke-dasharray: 300; animation: paeSigDrawO 0.8s ease-in-out 1.1s forwards; }';
-      css += '.pae-sig-svg.pae-sig-animate #paeSigR { stroke-dasharray: 250; animation: paeSigDrawR 0.7s ease-in-out 2s forwards; }';
-      css += '.pae-sig-svg.pae-sig-animate #paeSigA { stroke-dasharray: 300; animation: paeSigDrawA 0.8s ease-in-out 2.8s forwards; }';
-      css += '.pae-sig-svg.pae-sig-animate #paeSigN { stroke-dasharray: 300; animation: paeSigDrawN 0.8s ease-in-out 3.7s forwards; }';
-      css += '.pae-sig-svg:not(.pae-sig-animate) .pae-sig-letter { stroke-dashoffset: 400; }';
-      css += '@keyframes paeSigDrawM { from { stroke-dashoffset: 400; } to { stroke-dashoffset: 0; } }';
-      css += '@keyframes paeSigDrawO { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }';
-      css += '@keyframes paeSigDrawR { from { stroke-dashoffset: 250; } to { stroke-dashoffset: 0; } }';
-      css += '@keyframes paeSigDrawA { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }';
-      css += '@keyframes paeSigDrawN { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }';
-      st.textContent = css;
-      document.head.appendChild(st);
-    }
-    
-    // === Build signature HTML ===
-    function buildSignatureHTML() {
-      return '<div class="pae-sig-container">' +
-        '<div class="pae-sig-label">Created by</div>' +
-        '<svg class="pae-sig-svg" viewBox="0 0 340 110">' +
-          '<text id="paeSigM" class="pae-sig-letter" x="15" y="80" font-family="Georgia, Times New Roman, serif" font-size="70" font-weight="700">M</text>' +
-          '<text id="paeSigO" class="pae-sig-letter" x="82" y="80" font-family="Georgia, Times New Roman, serif" font-size="70" font-weight="700">o</text>' +
-          '<text id="paeSigR" class="pae-sig-letter" x="130" y="80" font-family="Georgia, Times New Roman, serif" font-size="70" font-weight="700">r</text>' +
-          '<text id="paeSigA" class="pae-sig-letter" x="170" y="80" font-family="Georgia, Times New Roman, serif" font-size="70" font-weight="700">a</text>' +
-          '<text id="paeSigN" class="pae-sig-letter" x="223" y="80" font-family="Georgia, Times New Roman, serif" font-size="70" font-weight="700">n</text>' +
-        '</svg>' +
-      '</div>';
-    }
-    
-    // === DOM observer: on slide 5 shown, inject signature + trigger animation. On slide 1, fix typo. ===
-    function watchGuideModal() {
-      var obs = new MutationObserver(function() {
-        var overlay = document.getElementById('paeGuideOverlay');
-        if (!overlay) return;
-        
-        // FIX 1: Slide 1 HE typo
-        var subtitle = overlay.querySelector('.pae-guide-subtitle');
-        if (subtitle && subtitle.textContent.indexOf('\u05de\u05d0\u05d9\u05d9\u05d3 AI') > -1) {
-          subtitle.textContent = subtitle.textContent.replace('\u05ea\u05de\u05d5\u05e0\u05d5\u05ea \u05de\u05d0\u05d9\u05d9\u05d3 AI', '\u05ea\u05de\u05d5\u05e0\u05d5\u05ea \u05d1\u05e2\u05d6\u05e8\u05ea AI');
-        }
-        
-        // FIX 2: Detect slide 5 (last dot is active) and inject signature
-        var dots = overlay.querySelectorAll('.pae-guide-dot');
-        if (dots.length !== 5) return;
-        var activeIdx = -1;
-        dots.forEach(function(d, i) { if (d.classList.contains('active')) activeIdx = i; });
-        
-        if (activeIdx === 4) {
-          var body = overlay.querySelector('.pae-guide-body');
-          if (body && !body.querySelector('.pae-sig-container')) {
-            body.insertAdjacentHTML('beforeend', buildSignatureHTML());
-            // Trigger animation after a tick
-            setTimeout(function() {
-              var svg = body.querySelector('.pae-sig-svg');
-              if (svg) svg.classList.add('pae-sig-animate');
-            }, 50);
-            _log('signature injected on slide 5');
-          }
-        }
-      });
-      obs.observe(document.body, { childList: true, subtree: true, characterData: true });
-    }
-    
-    function boot() {
-      injectSignatureStyles();
-      watchGuideModal();
-      _log('v7.9 ready');
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot);
-    } else {
-      boot();
-    }
-  })();
-</script>
-
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.8 */
-  (function() {
-    if (window.__paeV78Installed) { return; }
-    window.__paeV78Installed = true;
-    var _log = function(m) { try { console.log('[pae-v78]', m); } catch(e){} };
-    
-    function injectStyles() {
-      if (document.getElementById('__pae_v78_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v78_styles';
-      var css = '';
-      // FIX v7.8: Desktop layout overhaul — convert .app from grid to flex column
-      // Root cause: .left-col had position:sticky + fixed max-height,
-      // causing content (expanded categories + tag panel) to overflow VISUALLY
-      // into the hdrDisplay row sibling below. Flex column with position:static
-      // + height:auto on cols makes siblings respect each other's real height.
-      css += '@media (min-width: 768px) {';
-      css += '  .app {';
-      css += '    display: flex !important;';
-      css += '    flex-direction: column !important;';
-      css += '    max-width: 900px !important;';
-      css += '    margin: 0 auto !important;';
-      css += '  }';
-      css += '  .app > .left-col, .app > .right-col {';
-      css += '    position: static !important;';
-      css += '    height: auto !important;';
-      css += '    max-height: none !important;';
-      css += '    width: 100% !important;';
-      css += '    max-width: 100% !important;';
-      css += '    overflow: visible !important;';
-      css += '  }';
-      css += '  .app > .left-col { order: 1 !important; }';
-      css += '  .app > #paeHdrDisplay { order: 2 !important; }';
-      css += '  .app > .format-row { order: 3 !important; }';
-      css += '  .app > .random-divider { order: 4 !important; }';
-      css += '  .app > .right-col { order: 5 !important; }';
-      css += '}';
-      st.textContent = css;
-      document.head.appendChild(st);
-      _log('v7.8 desktop flex-column layout applied');
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', injectStyles);
-    } else {
-      injectStyles();
-    }
-  })();
-</script>
-
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.7 */
-  (function() {
-    if (window.__paeV77Installed) { return; }
-    window.__paeV77Installed = true;
-    var _log = function(m) { try { console.log('[pae-v77]', m); } catch(e){} };
-    
-    function injectStyles() {
-      if (document.getElementById('__pae_v77_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v77_styles';
-      var css = '';
-      // FIX 1: Remove horizontal scroll from .left-col and .right-col
-      css += '.app > .left-col, .app > .right-col { overflow-x: hidden !important; }';
-      // FIX 2: Add spacing above #paeHdrDisplay and .format-row (separation from categories)
-      css += '.app > #paeHdrDisplay { margin-top: 20px !important; margin-bottom: 6px !important; }';
-      css += '.app > .format-row { margin-bottom: 16px !important; }';
-      // FIX 3: Center format-row buttons
-      css += '.app > .format-row { justify-content: center !important; display: flex !important; flex-wrap: wrap !important; gap: 8px !important; }';
-      // FIX 4: Safety — ensure headers themselves do not cause overflow
-      css += '.pae-section-header { max-width: 100%; overflow: hidden; }';
-      st.textContent = css;
-      document.head.appendChild(st);
-      _log('v7.7 styles injected');
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', injectStyles);
-    } else {
-      injectStyles();
-    }
-  })();
-</script>
-
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.6 */
-  (function() {
-    if (window.__paeV76Installed) { return; }
-    window.__paeV76Installed = true;
-    var _log = function(m) { try { console.log('[pae-v76]', m); } catch(e){} };
-    
-    // TASK 1: Rename 'סגנונות' -> 'קטגוריות'
-    function renameStylesHeader() {
-      var hdr = document.getElementById('paeHdrStyles');
-      if (!hdr) return false;
-      var textEl = hdr.querySelector('.pae-section-text');
-      if (!textEl) return false;
-      var lang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
-      var newText = lang === 'en' ? 'Categories' : '\u05e7\u05d8\u05d2\u05d5\u05e8\u05d9\u05d5\u05ea';
-      textEl.textContent = newText;
-      textEl.dataset.key = 'categories';
-      return true;
-    }
-    
-    function observeLangForCategories() {
-      var obs = new MutationObserver(function(muts) {
-        muts.forEach(function(m) {
-          if (m.type === 'attributes' && m.attributeName === 'lang') {
-            setTimeout(renameStylesHeader, 50);
-            setTimeout(function() {
-              var btn = document.getElementById('paeHelpBtn');
-              if (btn) {
-                var lang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
-                var tip = lang === 'en' ? 'Guide' : '\u05de\u05d3\u05e8\u05d9\u05da';
-                btn.setAttribute('aria-label', tip);
-                btn.setAttribute('title', tip);
-              }
-            }, 50);
-          }
-        });
-      });
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-    }
-    
-    // TASK 2: Guide content
-    var GUIDE_SLIDES = {
-      he: [
-        { emoji: '\ud83c\udfa8', title: '\u05d1\u05e8\u05d5\u05db\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd \u05dc-Palette!', subtitle: '\u05d4\u05de\u05e7\u05d5\u05dd \u05e9\u05d1\u05d5 \u05e8\u05e2\u05d9\u05d5\u05e0\u05d5\u05ea \u05d4\u05d5\u05e4\u05db\u05d9\u05dd \u05dc\u05ea\u05de\u05d5\u05e0\u05d5\u05ea \u05de\u05d0\u05d9\u05d9\u05d3 AI', body: '\u05d9\u05e6\u05e8\u05ea\u05d9 \u05d0\u05ea \u05d4\u05db\u05dc\u05d9 \u05d4\u05d6\u05d4 \u05db\u05d3\u05d9 \u05e9\u05db\u05dc \u05d0\u05d7\u05d3 \u05d9\u05d5\u05db\u05dc \u05dc\u05db\u05ea\u05d5\u05d1 \u05d4\u05d5\u05e8\u05d0\u05d5\u05ea \u05de\u05e7\u05e6\u05d5\u05e2\u05d9\u05d5\u05ea \u05dc-AI \u05d1\u05e2\u05d1\u05e8\u05d9\u05ea \u05e4\u05e9\u05d5\u05d8\u05d4. \u05d1\u05dc\u05d9 \u05de\u05d5\u05e0\u05d7\u05d9\u05dd \u05de\u05e1\u05d5\u05d1\u05db\u05d9\u05dd. \u05e4\u05e9\u05d5\u05d8, \u05de\u05d4\u05d9\u05e8, \u05d5\u05e7\u05e6\u05ea \u05db\u05d9\u05e3 \ud83d\ude09' },
-        { emoji: '\u2728', title: '\u05e2\u05d1\u05e8\u05d9\u05ea \u05e4\u05e9\u05d5\u05d8\u05d4 \u2192 \u05ea\u05d5\u05e6\u05d0\u05d5\u05ea \u05de\u05e7\u05e6\u05d5\u05e2\u05d9\u05d5\u05ea', subtitle: '\u05de\u05d4 \u05d4\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4 \u05e2\u05d5\u05e9\u05d4 \u05d1\u05e4\u05d5\u05e2\u05dc?', body: '\u05de\u05d7\u05d5\u05dc\u05dc\u05d9 \u05d4\u05ea\u05de\u05d5\u05e0\u05d5\u05ea (Midjourney, Nano Banana) \u05d3\u05d5\u05e8\u05e9\u05d9\u05dd \u05e4\u05e8\u05d5\u05de\u05e4\u05d8\u05d9\u05dd \u05de\u05d3\u05d5\u05d9\u05e7\u05d9\u05dd \u05d1\u05d0\u05e0\u05d2\u05dc\u05d9\u05ea \u05e2\u05dd \u05de\u05d5\u05e0\u05d7\u05d9\u05dd \u05de\u05e7\u05e6\u05d5\u05e2\u05d9\u05d9\u05dd. \u05d4\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4 \u05de\u05db\u05d9\u05e8\u05d4 \u05d0\u05ea \u05d4\u05de\u05d9\u05dc\u05d9\u05dd \u05d5\u05d4\u05d8\u05e8\u05d9\u05e7\u05d9\u05dd \u05e9\u05d1\u05d0\u05de\u05ea \u05e2\u05d5\u05d1\u05d3\u05d9\u05dd \u2014 \u05d5\u05de\u05ea\u05e8\u05d2\u05de\u05ea \u05d0\u05ea \u05d4\u05e8\u05e2\u05d9\u05d5\u05df \u05e9\u05dc\u05da \u05dc\u05e4\u05e8\u05d5\u05de\u05e4\u05d8 \u05de\u05e7\u05e6\u05d5\u05e2\u05d9 \u05d1\u05d0\u05e0\u05d2\u05dc\u05d9\u05ea.' },
-        { emoji: '\ud83d\udcdd', title: '3 \u05e6\u05e2\u05d3\u05d9\u05dd \u05e4\u05e9\u05d5\u05d8\u05d9\u05dd', subtitle: '\u05d6\u05d4 \u05d1\u05d0\u05de\u05ea \u05d4\u05db\u05dc', isSteps: true },
-        { emoji: '\ud83e\uddea', title: '\u05db\u05de\u05d4 \u05d3\u05d1\u05e8\u05d9\u05dd \u05e9\u05db\u05d3\u05d0\u05d9 \u05dc\u05d4\u05db\u05d9\u05e8', subtitle: '\u05e9\u05d5\u05d5\u05d4 \u05dc\u05d3\u05e2\u05ea \u05e9\u05d9\u05e9', isFeatures: true },
-        { emoji: '\ud83d\ude80', title: '\u05d9\u05d0\u05dc\u05dc\u05d4, \u05d1\u05d5\u05d0 \u05e0\u05ea\u05d7\u05d9\u05dc!', subtitle: '', body: '\u05dc\u05d0 \u05e6\u05e8\u05d9\u05da \u05dc\u05d4\u05d9\u05e8\u05e9\u05dd. \u05d4\u05db\u05dc \u05d7\u05d9\u05e0\u05dd. \u05d2\u05dd \u05d1\u05e2\u05d1\u05e8\u05d9\u05ea.<br><br>\u05e8\u05d5\u05e6\u05d4 \u05dc\u05e8\u05d0\u05d5\u05ea \u05d0\u05ea \u05d4\u05de\u05d3\u05e8\u05d9\u05da \u05e9\u05d5\u05d1? \u05d9\u05e9 \u05db\u05e4\u05ea\u05d5\u05e8 <b>?</b> \u05d1\u05e8\u05d0\u05e9 \u05d4\u05e2\u05de\u05d5\u05d3 \u05e9\u05d9\u05d7\u05d6\u05d9\u05e8 \u05d0\u05d5\u05ea\u05da \u05dc\u05db\u05d0\u05df \u05d1\u05db\u05dc \u05e8\u05d2\u05e2.' }
-      ],
-      en: [
-        { emoji: '\ud83c\udfa8', title: 'Welcome to Palette!', subtitle: 'Where ideas become stunning AI images', body: 'I built this so anyone can write pro-level AI prompts in plain words. No jargon. Just fun and fast \ud83d\ude09' },
-        { emoji: '\u2728', title: 'Simple words \u2192 pro results', subtitle: 'What does the app actually do?', body: 'AI image generators (Midjourney, Nano Banana) need precise prompts in English with professional terms. The app knows the keywords and tricks that really work \u2014 and it translates your idea into a professional English prompt.' },
-        { emoji: '\ud83d\udcdd', title: '3 simple steps', subtitle: "That's really all", isSteps: true },
-        { emoji: '\ud83e\uddea', title: 'A few cool things to know', subtitle: 'Worth knowing these exist', isFeatures: true },
-        { emoji: '\ud83d\ude80', title: "Alright, let's go!", subtitle: '', body: 'No registration. Free. Hebrew too.<br><br>Want to see this guide again? Click the <b>?</b> button at the top anytime.' }
-      ]
-    };
-    
-    var GUIDE_STEPS = {
-      he: [
-        { num: '1\ufe0f\u20e3', title: '\u05d1\u05d7\u05e8\u05d5 \u05e1\u05d2\u05e0\u05d5\u05df', desc: '\u05e6\u05d9\u05d5\u05e8? \u05de\u05e6\u05d9\u05d0\u05d5\u05ea\u05d9? \u05d0\u05e0\u05d9\u05de\u05e6\u05d9\u05d4?' },
-        { num: '2\ufe0f\u20e3', title: '\u05db\u05ea\u05d1\u05d5 \u05e8\u05e2\u05d9\u05d5\u05df', desc: '\u05dc\u05de\u05e9\u05dc: "\u05d7\u05ea\u05d5\u05dc \u05e7\u05d8\u05df \u05e9\u05d5\u05ea\u05d4 \u05e7\u05e4\u05d4"' },
-        { num: '3\ufe0f\u20e3', title: '\u05dc\u05d7\u05e6\u05d5 "\u05e6\u05d5\u05e8"', desc: '\u05d5\u05d4\u05e2\u05ea\u05d9\u05e7\u05d5 \u05d0\u05ea \u05d4\u05ea\u05d5\u05e6\u05d0\u05d4' }
-      ],
-      en: [
-        { num: '1\ufe0f\u20e3', title: 'Pick a style', desc: 'Drawing? Realistic? Animation?' },
-        { num: '2\ufe0f\u20e3', title: 'Type an idea', desc: 'e.g., "a small cat drinking coffee"' },
-        { num: '3\ufe0f\u20e3', title: 'Hit "Generate"', desc: 'And copy the result' }
-      ]
-    };
-    
-    var GUIDE_FEATURES = {
-      he: [
-        { emoji: '\u2728', title: '\u05de\u05e6\u05d1 \u05d9\u05dc\u05d3\u05d9\u05dd', desc: '\u05dc\u05d9\u05e6\u05d9\u05e8\u05ea \u05ea\u05de\u05d5\u05e0\u05d5\u05ea \u05d1\u05d8\u05d5\u05d7\u05d5\u05ea' },
-        { emoji: '\ud83c\udfb2', title: '\u05d4\u05e4\u05ea\u05d9\u05e2\u05d5 \u05d0\u05d5\u05ea\u05d9', desc: '\u05dc\u05e8\u05e2\u05d9\u05d5\u05e0\u05d5\u05ea \u05e1\u05e4\u05d5\u05e0\u05d8\u05e0\u05d9\u05d9\u05dd' },
-        { emoji: '\ud83d\udcda', title: '\u05d4\u05d9\u05e1\u05d8\u05d5\u05e8\u05d9\u05d4', desc: '\u05db\u05dc \u05d4\u05e4\u05e8\u05d5\u05de\u05e4\u05d8\u05d9\u05dd \u05d4\u05e7\u05d5\u05d3\u05de\u05d9\u05dd' },
-        { emoji: '\ud83d\udce4', title: '\u05e9\u05d9\u05ea\u05d5\u05e3 \u05d7\u05db\u05dd', desc: '\u05e9\u05dc\u05d9\u05d7\u05ea \u05d4\u05e4\u05e8\u05d5\u05de\u05e4\u05d8 \u05dc\u05d7\u05d1\u05e8\u05d9\u05dd \u05d9\u05d7\u05d3 \u05e2\u05dd \u05d4\u05e1\u05d1\u05e8 \u05e2\u05dc \u05d4\u05d0\u05e4\u05dc\u05d9\u05e7\u05e6\u05d9\u05d4 \u05d5\u05e7\u05d9\u05e9\u05d5\u05e8' }
-      ],
-      en: [
-        { emoji: '\u2728', title: 'Kids mode', desc: 'Safe images for children' },
-        { emoji: '\ud83c\udfb2', title: 'Surprise me', desc: 'For spontaneous ideas' },
-        { emoji: '\ud83d\udcda', title: 'History', desc: 'All your past prompts' },
-        { emoji: '\ud83d\udce4', title: 'Smart share', desc: 'Share your prompt with friends, including app info and link' }
-      ]
-    };
-    
-    var GUIDE_T = {
-      skip: { he: '\u05d3\u05dc\u05d2', en: 'Skip' },
-      back: { he: '\u05d7\u05d6\u05d5\u05e8', en: 'Back' },
-      next: { he: '\u05d4\u05d1\u05d0 \u2190', en: 'Next \u2192' },
-      start: { he: '\u05d9\u05d0\u05dc\u05dc\u05d4, \u05d1\u05d5\u05d0 \u05e0\u05d9\u05db\u05e0\u05e1! \u2728', en: "Let's go! \u2728" },
-      of: { he: '\u05de\u05ea\u05d5\u05da', en: 'of' },
-      close: { he: '\u05e1\u05d2\u05d5\u05e8', en: 'Close' },
-      tooltip: { he: '\u05de\u05d3\u05e8\u05d9\u05da', en: 'Guide' }
-    };
-    
-    var guideSlide = 0;
-    function getGuideLang() { return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
-    
-    function injectGuideStyles() {
-      if (document.getElementById('__pae_v76_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v76_styles';
-      var css = '';
-      css += '#paeHelpBtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#FFD93D;border:1.5px solid rgba(0,0,0,0.15);color:#1a1a2e;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-inline-start:15px;vertical-align:middle;box-shadow:0 2px 8px rgba(255,217,61,0.45);transition:transform 0.15s,box-shadow 0.15s;padding:0;line-height:1;flex-shrink:0;}';
-      css += '#paeHelpBtn:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(255,217,61,0.6);}';
-      css += '#paeHelpBtn:active{transform:scale(0.95);}';
-      css += 'body.light-mode #paeHelpBtn,[data-theme="light"] #paeHelpBtn{background:#F9C015;border:1.5px solid rgba(0,0,0,0.4);color:#000;box-shadow:0 2px 8px rgba(0,0,0,0.25);}';
-      css += '.pae-guide-overlay{position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.88);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px;animation:paeGuideFadeIn 0.3s ease-out;}';
-      css += '.pae-guide-box{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;border-radius:24px;padding:28px 24px 22px;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.1);position:relative;animation:paeGuideSlideUp 0.4s cubic-bezier(0.16,1,0.3,1);}';
-      css += '.pae-guide-top{display:flex;align-items:center;justify-content:flex-end;margin-bottom:16px;}';
-      css += '.pae-guide-close{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;}';
-      css += '.pae-guide-close:hover{color:#fff;border-color:rgba(255,255,255,0.3);}';
-      css += '.pae-guide-content{text-align:center;min-height:260px;display:flex;flex-direction:column;justify-content:center;}';
-      css += '.pae-guide-emoji{font-size:52px;line-height:1;margin-bottom:14px;}';
-      css += '.pae-guide-title{font-size:21px;font-weight:700;margin:0 0 6px;line-height:1.3;color:#fff;}';
-      css += '.pae-guide-subtitle{font-size:13px;color:#00e5cc;margin:0 0 14px;font-weight:500;}';
-      css += '.pae-guide-body{font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.85);}';
-      css += '.pae-guide-dots{display:flex;gap:6px;justify-content:center;margin:24px 0 16px;}';
-      css += '.pae-guide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.25);transition:all 0.3s;}';
-      css += '.pae-guide-dot.active{background:#00e5cc;width:28px;border-radius:4px;}';
-      css += '.pae-guide-btn-row{display:flex;gap:10px;align-items:center;justify-content:space-between;}';
-      css += '.pae-guide-btn-primary{background:linear-gradient(135deg,#007aff,#00a3ff);color:#fff;border:none;padding:13px 24px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;min-height:46px;font-family:inherit;}';
-      css += '.pae-guide-btn-secondary{background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.1);padding:13px 20px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;min-height:46px;font-family:inherit;}';
-      css += '.pae-guide-btn-text{background:transparent;border:none;color:rgba(255,255,255,0.5);padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;}';
-      css += '.pae-guide-step-list,.pae-guide-feat-list{display:flex;flex-direction:column;gap:12px;text-align:start;margin:14px 0;}';
-      css += '.pae-guide-step-list > div{display:flex;gap:12px;align-items:flex-start;}';
-      css += '.pae-guide-step-list .num{font-size:22px;flex-shrink:0;}';
-      css += '.pae-guide-step-list .title{font-weight:600;margin-bottom:2px;font-size:15px;}';
-      css += '.pae-guide-step-list .desc{opacity:0.7;font-size:13px;}';
-      css += '.pae-guide-feat-list > div{padding:10px 14px;background:rgba(0,122,255,0.1);border-radius:10px;border-inline-start:3px solid #007aff;font-size:13.5px;}';
-      css += '@keyframes paeGuideFadeIn{from{opacity:0;}to{opacity:1;}}';
-      css += '@keyframes paeGuideSlideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}';
-      st.textContent = css;
-      document.head.appendChild(st);
-    }
-    
-    function openGuide(){if(document.getElementById('paeGuideOverlay'))return;guideSlide=0;renderGuide();}
-    window.__paeOpenGuide=openGuide;
-    
-    function closeGuide(){var ov=document.getElementById('paeGuideOverlay');if(!ov)return;ov.style.opacity='0';setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov);},200);}
-    window.__paeCloseGuide=closeGuide;
-    window.__paeGoSlide=function(idx){guideSlide=idx;renderGuide();};
-    
-    function renderGuide(){
-      var lang=getGuideLang();
-      var slides=GUIDE_SLIDES[lang];
-      var slide=slides[guideSlide];
-      var total=slides.length;
-      var bodyHTML='';
-      if(slide.isSteps){
-        bodyHTML='<div class="pae-guide-step-list">'+GUIDE_STEPS[lang].map(function(s){return '<div><span class="num">'+s.num+'</span><div><div class="title">'+s.title+'</div><div class="desc">'+s.desc+'</div></div></div>';}).join('')+'</div>';
-      }else if(slide.isFeatures){
-        bodyHTML='<div class="pae-guide-feat-list">'+GUIDE_FEATURES[lang].map(function(f){return '<div>'+f.emoji+' <b>'+f.title+'</b> \u2014 '+f.desc+'</div>';}).join('')+'</div>';
-      }else{bodyHTML=slide.body;}
-      var leftBtnHTML=guideSlide===0?'<button class="pae-guide-btn-text" onclick="__paeCloseGuide()">'+GUIDE_T.skip[lang]+'</button>':'<button class="pae-guide-btn-secondary" onclick="__paeGoSlide('+(guideSlide-1)+')">'+GUIDE_T.back[lang]+'</button>';
-      var rightBtnHTML=guideSlide===total-1?'<button class="pae-guide-btn-primary" onclick="__paeCloseGuide()">'+GUIDE_T.start[lang]+'</button>':'<button class="pae-guide-btn-primary" onclick="__paeGoSlide('+(guideSlide+1)+')">'+GUIDE_T.next[lang]+'</button>';
-      var ov=document.getElementById('paeGuideOverlay');
-      if(!ov){ov=document.createElement('div');ov.id='paeGuideOverlay';ov.className='pae-guide-overlay';ov.style.direction=lang==='en'?'ltr':'rtl';ov.addEventListener('click',function(e){if(e.target===ov)closeGuide();});document.body.appendChild(ov);}else{ov.style.direction=lang==='en'?'ltr':'rtl';}
-      var dotsHTML='';
-      for(var i=0;i<total;i++){dotsHTML+='<div class="pae-guide-dot'+(i===guideSlide?' active':'')+'"></div>';}
-      var subtitleHTML=slide.subtitle?'<p class="pae-guide-subtitle">'+slide.subtitle+'</p>':'';
-      ov.innerHTML='<div class="pae-guide-box"><div class="pae-guide-top"><button class="pae-guide-close" onclick="__paeCloseGuide()" aria-label="'+GUIDE_T.close[lang]+'">\u2715</button></div><div class="pae-guide-content"><div class="pae-guide-emoji">'+slide.emoji+'</div><h2 class="pae-guide-title">'+slide.title+'</h2>'+subtitleHTML+'<div class="pae-guide-body">'+bodyHTML+'</div></div><div class="pae-guide-dots">'+dotsHTML+'</div><div class="pae-guide-btn-row">'+leftBtnHTML+rightBtnHTML+'</div></div>';
-    }
-    
-    function addHelpButton(){
-      if(document.getElementById('paeHelpBtn'))return true;
-      var headerTitle=document.querySelector('.header-title');
-      if(!headerTitle)return false;
-      var btn=document.createElement('button');
-      btn.id='paeHelpBtn';
-      btn.type='button';
-      btn.textContent='?';
-      var lang=getGuideLang();
-      var tip=lang==='en'?'Guide':'\u05de\u05d3\u05e8\u05d9\u05da';
-      btn.setAttribute('aria-label',tip);
-      btn.setAttribute('title',tip);
-      btn.onclick=openGuide;
-      if(headerTitle.nextSibling){headerTitle.parentNode.insertBefore(btn,headerTitle.nextSibling);}else{headerTitle.parentNode.appendChild(btn);}
-      return true;
-    }
-    
-    document.addEventListener('keydown',function(e){
-      if(!document.getElementById('paeGuideOverlay'))return;
-      var lang=getGuideLang();
-      var total=GUIDE_SLIDES[lang].length;
-      if(e.key==='Escape')closeGuide();
-      else if(e.key==='ArrowLeft'){if(lang==='he'&&guideSlide<total-1)window.__paeGoSlide(guideSlide+1);else if(lang==='en'&&guideSlide>0)window.__paeGoSlide(guideSlide-1);}
-      else if(e.key==='ArrowRight'){if(lang==='he'&&guideSlide>0)window.__paeGoSlide(guideSlide-1);else if(lang==='en'&&guideSlide<total-1)window.__paeGoSlide(guideSlide+1);}
+  function renderCards(isEmpty, userText){
+    var lang = getLang();
+    var subjects = isKidsMode() ? RANDOM_SUBJECTS_KIDS : RANDOM_SUBJECTS_ADULT;
+    var cardsContainer = document.getElementById('varCards');
+    cardsContainer.innerHTML = '';
+    var keys = ['realistic','artistic','cinematic'];
+    keys.forEach(function(key){
+      var t = VARIANT_TEMPLATES[key];
+      var name = lang === 'en' ? t.nameEn : t.nameHe;
+      var base = isEmpty ? pick(subjects) : userText;
+      var preview = base + t.suffix;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'var-card';
+      btn.setAttribute('data-key', key);
+      btn.setAttribute('data-preview', preview);
+      btn.innerHTML = ''
+        + '<div class="var-card-head"><span class="var-card-emoji">' + t.emoji + '</span><span>' + name + '</span></div>'
+        + '<div class="var-card-preview">' + escapeHtml(preview.length > 110 ? preview.substring(0,110) + '…' : preview) + '</div>';
+      btn.addEventListener('click', function(){ applyVariant(preview); });
+      cardsContainer.appendChild(btn);
     });
-    
-    var attempts=0;
-    function tryBoot(){
-      attempts++;
-      injectGuideStyles();
-      var renamed=renameStylesHeader();
-      var btnAdded=addHelpButton();
-      if((!renamed||!btnAdded)&&attempts<33){setTimeout(tryBoot,300);}
-      else{observeLangForCategories();_log('v7.6 ready attempt='+attempts);if(attempts<6)setTimeout(tryBoot,500);}
+    var randBtn = document.createElement('button');
+    randBtn.type = 'button';
+    randBtn.className = 'var-card var-card-random';
+    randBtn.innerHTML = '<div class="var-card-head"><span>' + tr('randomCard') + '</span></div>';
+    randBtn.addEventListener('click', applyRandomCard);
+    cardsContainer.appendChild(randBtn);
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function openVariantsModal(){
+    buildModal();
+    var ta = document.getElementById('userInput');
+    var txt = (ta && ta.value || '').trim();
+    var isEmpty = !txt;
+    document.getElementById('varTitle').textContent = isEmpty ? tr('titleEmpty') : tr('titleFilled');
+    document.getElementById('varSubtitle').textContent = isEmpty ? tr('subEmpty') : tr('subFilled');
+    document.getElementById('varCancelBtn').textContent = tr('cancel');
+    renderCards(isEmpty, txt);
+    var ov = document.getElementById('varOverlay');
+    ov.classList.add('show');
+    setTimeout(function(){ var first = ov.querySelector('.var-card'); if (first) first.focus(); }, 50);
+  }
+
+  function closeVariantsModal(){
+    var ov = document.getElementById('varOverlay');
+    if (ov) ov.classList.remove('show');
+  }
+
+  function applyVariant(fullText){
+    var ta = document.getElementById('userInput');
+    if (ta){
+      ta.value = fullText;
+      try { ta.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+      try { ta.focus(); } catch(e) {}
     }
-    
-    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',tryBoot);}else{tryBoot();}
-  })();
+    closeVariantsModal();
+  }
+
+  function applyRandomCard(){
+    closeVariantsModal();
+    if (typeof window.randomize === 'function') {
+      try { window.randomize(); } catch(e) { console.error('[variants]', e); }
+    }
+  }
+
+  window.openVariantsModal = openVariantsModal;
+  window.closeVariantsModal = closeVariantsModal;
+  window.applyVariant = applyVariant;
+})();
 </script>
 
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.5 */
-  (function() {
-    if (window.__paeV75Installed) { return; }
-    window.__paeV75Installed = true;
-    var _log = function(m) { try { console.log('[pae-v75]', m); } catch(e){} };
-    
-    function moveTextInputHeader() {
-      var hdr = document.getElementById('paeHdrTextInput');
-      var taWrap = document.querySelector('.textarea-wrap');
-      var tbToolbar = document.querySelector('.tb-toolbar');
-      if (!hdr || !taWrap || !tbToolbar) return false;
-      
-      // Verify they share the same parent
-      if (hdr.parentElement !== taWrap.parentElement) return false;
-      if (tbToolbar.parentElement !== taWrap.parentElement) return false;
-      
-      // Check if already in correct position (immediately before textarea-wrap, after toolbar)
-      if (hdr.previousElementSibling === tbToolbar && hdr.nextElementSibling === taWrap) {
-        _log('already in correct position');
-        return true;
-      }
-      
-      // Move: insert hdr BEFORE taWrap (this also removes it from current position)
-      taWrap.parentElement.insertBefore(hdr, taWrap);
-      _log('hdrTextInput moved to after tb-toolbar, before textarea-wrap');
-      return true;
-    }
-    
-    var attempts = 0;
-    function tryMove() {
-      attempts++;
-      var ok = moveTextInputHeader();
-      if (!ok && attempts < 33) {
-        setTimeout(tryMove, 300);
-      } else {
-        _log('v7.5 done attempt=' + attempts);
-        // Retry a few more times in case v7.2 re-inserts
-        if (attempts < 6) setTimeout(tryMove, 500);
-      }
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', tryMove);
-    } else {
-      tryMove();
-    }
-  })();
-</script>
+<!-- S2: Engine Adapter (2026-05-06) -->
+<script>
+(function(){
+  if (window.__engineAdapterInstalled) return;
+  window.__engineAdapterInstalled = true;
 
-<script data-pae-removed="true" type="text/plain">/*! REMOVED v7.4 */
-  (function() {
-    if (window.__paeV74Installed) { return; }
-    window.__paeV74Installed = true;
-    
-    var _log = function(m) { try { console.log('[pae-v74]', m); } catch(e){} };
-    
-    function injectStyles() {
-      if (document.getElementById('__pae_v74_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v74_styles';
-      st.textContent = 
-        '.app > #paeHdrDisplay,' +
-        '.app > .format-row,' +
-        '.app > .random-divider {' +
-        '  order: 2 !important;' +
-        '}' +
-        '@media (min-width: 768px) {' +
-        '  .app > #paeHdrDisplay,' +
-        '  .app > .format-row,' +
-        '  .app > .random-divider {' +
-        '    grid-column: 1 / -1 !important;' +
-        '  }' +
-        '}' +
-        '.pae-section-header {' +
-        '  width: 100%;' +
-        '  box-sizing: border-box;' +
-        '}';
-      document.head.appendChild(st);
-      _log('v7.4 styles');
+  var IMG_ADAPTERS = {
+    midjourney: {
+      name: 'Midjourney',
+      emoji: '🎬',
+      format: function(txt){ return txt; }
+    },
+    nanoBanana: {
+      name: 'Nano Banana',
+      emoji: '🍌',
+      format: function(txt){ return stripFlagsAddArText(txt); }
+    },
+    dalle: {
+      name: 'DALL-E',
+      emoji: '🎨',
+      format: function(txt){ return toSentences(stripFlagsAddArText(txt)); }
+    },
+    chatgpt: {
+      name: 'ChatGPT',
+      emoji: '🤖',
+      format: function(txt){ return stripAllFlags(txt); }
+    },
+    stableDiffusion: {
+      name: 'Stable Diffusion',
+      emoji: '🎯',
+      format: function(txt){ return sdFormat(txt); }
     }
-    
-    function reorderDOM() {
-      var app = document.querySelector('.app');
-      if (!app) return false;
-      var leftCol = app.querySelector(':scope > .left-col');
-      var rightCol = app.querySelector(':scope > .right-col');
-      var hdrDisplay = document.getElementById('paeHdrDisplay');
-      var formatRow = app.querySelector(':scope > .format-row');
-      var randomDivider = app.querySelector(':scope > .random-divider');
-      if (!leftCol || !rightCol || !hdrDisplay || !formatRow) return false;
-      var desired = [leftCol, hdrDisplay, formatRow];
-      if (randomDivider) desired.push(randomDivider);
-      desired.push(rightCol);
-      var children = Array.from(app.children);
-      var correct = desired.every(function(el, i) { return children[i] === el; });
-      if (!correct) {
-        desired.forEach(function(el) { app.appendChild(el); });
-        _log('DOM reordered');
-      }
-      return true;
-    }
-    
-    var attempts = 0;
-    function tryFix() {
-      attempts++;
-      injectStyles();
-      var ok = reorderDOM();
-      if (!ok && attempts < 33) {
-        setTimeout(tryFix, 300);
-      } else {
-        _log('v7.4 ok attempt=' + attempts);
-        if (attempts < 6) setTimeout(tryFix, 500);
-      }
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', tryFix);
-    } else {
-      tryFix();
-    }
-  })();
-</script>
+  };
 
-<script data-pae-removed="true" type="text/plain">
-  /*! REMOVED v7.2 */
-  (function() {
-    if (window.__paeV72Installed) { return; }
-    window.__paeV72Installed = true;
-    
-    var _log = function(msg) { try { console.log('[pae-v72]', msg); } catch(e){} };
-    
-    // Translations
-    var T = {
-      styles: { he: 'סגנונות', en: 'Styles' },
-      display: { he: 'סוגי תצוגה', en: 'Display types' },
-      textInput: { he: 'הכנס/י כאן את הטקסט שלך בשביל התמונה', en: 'Enter the text for your image here' }
+  // === Adapters helpers ===
+  function getArMatch(txt){
+    var m = txt.match(/--ar\s+(\d+):(\d+)/);
+    return m ? m[1] + ':' + m[2] : null;
+  }
+  function arToText(ar){
+    var map = { '16:9': 'wide cinematic 16:9 framing', '9:16': 'vertical 9:16 framing', '1:1': 'square 1:1 composition', '4:3': '4:3 standard framing', '3:2': '3:2 photographic framing' };
+    return map[ar] || (ar + ' framing');
+  }
+  function stripFlagsAddArText(txt){
+    var ar = getArMatch(txt);
+    var stripped = txt.replace(/--ar\s+\S+/g, '').replace(/--no\s+[^\n]*$/m, '').replace(/\s+/g, ' ').trim();
+    stripped = stripped.replace(/,\s*$/, '').trim();
+    if (ar) stripped += ', ' + arToText(ar);
+    return stripped;
+  }
+  function stripAllFlags(txt){
+    var stripped = txt.replace(/--ar\s+\S+/g, '').replace(/--no\s+[^\n]*$/m, '').replace(/\s+/g, ' ').trim();
+    return stripped.replace(/,\s*$/, '').trim();
+  }
+  function toSentences(txt){
+    return txt.split(/,\s+/).map(function(s){ return s.trim(); }).filter(Boolean).join('. ') + '.';
+  }
+  function sdFormat(txt){
+    var noMatch = txt.match(/--no\s+([^\n]+)$/m);
+    var neg = noMatch ? noMatch[1].trim() : '';
+    var cleaned = txt.replace(/--no\s+[^\n]*$/m, '').trim().replace(/,\s*$/, '');
+    return neg ? cleaned + '\n\nNegative prompt: ' + neg : cleaned;
+  }
+
+  // === State ===
+  function getEngine(){
+    try { return localStorage.getItem('paeEngine') || 'nanoBanana'; }
+    catch(e) { return 'nanoBanana'; }
+  }
+  function setEngine(key){
+    if (!IMG_ADAPTERS[key]) return;
+    try { localStorage.setItem('paeEngine', key); } catch(e) {}
+    updateActiveTab();
+  }
+  function updateActiveTab(){
+    var current = getEngine();
+    var bar = document.getElementById('engineBar');
+    if (!bar) return;
+    bar.querySelectorAll('.engine-tab').forEach(function(btn){
+      var isActive = btn.dataset.eng === current;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+  }
+
+  // === UI Injection (S17 final 2026-05-07: inline buttons only, no label, no dropdown) ===
+  // S18 (deploy QA): made re-positioning idempotent. If pae-v2 Layout B moves action-row
+  // AFTER S2 injection, the bar gets orphaned. Always re-check sibling order.
+  function injectEngineBar(){
+    var copyBtn = document.getElementById('copyBtn');
+    if (!copyBtn) return false;
+    var actionRow = copyBtn.closest('.action-row');
+    if (!actionRow) return false;
+    var bar = document.getElementById('engineBar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'engine-bar';
+      bar.id = 'engineBar';
+      bar.setAttribute('role', 'tablist');
+      Object.keys(IMG_ADAPTERS).forEach(function(key){
+        var a = IMG_ADAPTERS[key];
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'engine-tab';
+        btn.dataset.eng = key;
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-label', a.name);
+        btn.innerHTML = '<span class="engine-tab-emoji">' + a.emoji + '</span><span>' + a.name + '</span>';
+        btn.addEventListener('click', function(){ setEngine(key); });
+        bar.appendChild(btn);
+      });
+    }
+    // Ensure bar is the immediate sibling BEFORE action-row, even if action-row was moved
+    if (bar.nextElementSibling !== actionRow || bar.parentNode !== actionRow.parentNode) {
+      actionRow.parentNode.insertBefore(bar, actionRow);
+    }
+    updateActiveTab();
+    return true;
+  }
+  var _engineBarBootAttempts = 0;
+  function tryInjectBar(){
+    _engineBarBootAttempts++;
+    injectEngineBar(); // idempotent — also re-positions if needed
+    // Keep polling ~4.5s to outlast pae-v2's 4-second Layout B boot loop
+    if (_engineBarBootAttempts < 15) setTimeout(tryInjectBar, 300);
+  }
+
+  // === Wrap copyPrompt with engine adaptation ===
+  function installCopyWrapper(){
+    var orig = window.copyPrompt;
+    if (!orig || orig.__engineWrapped) return false;
+    var wrapped = function(){
+      var finalEl = document.getElementById('finalPrompt');
+      if (!finalEl) return orig.apply(this, arguments);
+      var origText = finalEl.textContent || '';
+      // If empty/placeholder, let original handle it
+      if (!origText || origText.indexOf('\u2728') !== -1 || origText.length < 5) {
+        return orig.apply(this, arguments);
+      }
+      var adapted = IMG_ADAPTERS[getEngine()].format(origText);
+      // Skip wrapping if no transformation
+      if (adapted === origText) {
+        return orig.apply(this, arguments);
+      }
+      // Replace text temporarily for orig to copy adapted version
+      finalEl.textContent = adapted;
+      try {
+        return orig.apply(this, arguments);
+      } finally {
+        setTimeout(function(){ finalEl.textContent = origText; }, 80);
+      }
     };
-    
-    function getLang() {
-      return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
+    wrapped.__engineWrapped = true;
+    window.copyPrompt = wrapped;
+    return true;
+  }
+
+  function tryInstallWrapper(){
+    if (installCopyWrapper()) {
+      _log('copyPrompt wrapped');
+      return;
     }
-    
-    // ========= Style injection for section headers =========
-    function injectStyles() {
-      if (document.getElementById('__pae_v72_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v72_styles';
-      st.textContent = [
-        '.pae-section-header {',
-        '  display: flex;',
-        '  align-items: center;',
-        '  gap: 8px;',
-        '  font-size: 13px;',
-        '  font-weight: 600;',
-        '  letter-spacing: 0.3px;',
-        '  color: var(--muted, #a0a0b8);',
-        '  text-transform: uppercase;',
-        '  margin: 14px 4px 8px;',
-        '  padding-bottom: 6px;',
-        '  border-bottom: 1px solid rgba(255, 255, 255, 0.06);',
-        '  opacity: 0.85;',
-        '}',
-        '.pae-section-header .pae-section-icon {',
-        '  font-size: 15px;',
-        '  opacity: 0.9;',
-        '}',
-        '/* Light mode */',
-        'body.light-mode .pae-section-header,',
-        '[data-theme="light"] .pae-section-header {',
-        '  border-bottom-color: rgba(0, 0, 0, 0.08);',
-        '  color: rgba(0, 0, 0, 0.55);',
-        '}',
-        '/* First header in container — reduce top margin */',
-        '.right-col > .pae-section-header:first-child,',
-        '.left-col > .pae-section-header:first-child {',
-        '  margin-top: 2px;',
-        '}'
-      ].join('\n');
-      document.head.appendChild(st);
-    }
-    
-    // ========= Header creator =========
-    function makeHeader(id, iconEmoji, keyName) {
-      var el = document.createElement('div');
-      el.className = 'pae-section-header';
-      el.id = id;
-      el.setAttribute('role', 'heading');
-      el.setAttribute('aria-level', '3');
-      var icon = document.createElement('span');
-      icon.className = 'pae-section-icon';
-      icon.textContent = iconEmoji;
-      icon.setAttribute('aria-hidden', 'true');
-      var text = document.createElement('span');
-      text.className = 'pae-section-text';
-      text.dataset.key = keyName;
-      text.textContent = T[keyName][getLang()];
-      el.appendChild(icon);
-      el.appendChild(text);
-      return el;
-    }
-    
-    // ========= Insert all headers =========
-    function insertHeaders() {
-      // 1. "סגנונות" — above #catGrid
-      var catGrid = document.getElementById('catGrid');
-      if (catGrid && !document.getElementById('paeHdrStyles')) {
-        var hdrStyles = makeHeader('paeHdrStyles', '🎨', 'styles');
-        catGrid.parentNode.insertBefore(hdrStyles, catGrid);
-        _log('inserted Styles header');
-      }
-      
-      // 2. "סוגי תצוגה" — above .format-row
-      var formatRow = document.querySelector('.format-row');
-      if (formatRow && !document.getElementById('paeHdrDisplay')) {
-        var hdrDisplay = makeHeader('paeHdrDisplay', '🎬', 'display');
-        formatRow.parentNode.insertBefore(hdrDisplay, formatRow);
-        _log('inserted Display types header');
-      }
-      
-      // 3. "הכנס/י כאן..." — above .textarea-wrap (BUT tb-toolbar sits above it; need to insert BEFORE tb-toolbar)
-      var taWrap = document.querySelector('.textarea-wrap');
-      var tbToolbar = document.querySelector('.tb-toolbar');
-      if (taWrap && !document.getElementById('paeHdrTextInput')) {
-        var hdrTextInput = makeHeader('paeHdrTextInput', '✍️', 'textInput');
-        // Insert BEFORE tb-toolbar if it exists (which is above textarea), else before textarea-wrap
-        var insertTarget = tbToolbar && tbToolbar.parentNode === taWrap.parentNode ? tbToolbar : taWrap;
-        insertTarget.parentNode.insertBefore(hdrTextInput, insertTarget);
-        _log('inserted Text Input header');
-      }
-    }
-    
-    // ========= Update text on language change =========
-    function updateHeaderTexts() {
-      var lang = getLang();
-      document.querySelectorAll('.pae-section-header .pae-section-text[data-key]').forEach(function(el) {
-        var key = el.dataset.key;
-        if (T[key] && T[key][lang]) {
-          el.textContent = T[key][lang];
-        }
-      });
-    }
-    
-    // Observe lang attribute changes
-    function observeLangChanges() {
-      var obs = new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-          if (m.type === 'attributes' && m.attributeName === 'lang') {
-            updateHeaderTexts();
-          }
-        });
-      });
-      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-    }
-    
-    function boot() {
-      injectStyles();
-      insertHeaders();
-      observeLangChanges();
-      _log('v7.2 installed (section headers)');
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot);
-    } else {
-      boot();
-    }
-  })();
+    setTimeout(tryInstallWrapper, 200);
+  }
+  function _log(m){ try { console.log('[engine-adapter]', m); } catch(e){} }
+
+  // === Boot ===
+  function boot(){
+    tryInjectBar();
+    tryInstallWrapper();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  window.IMG_ADAPTERS = IMG_ADAPTERS;
+  window.getEngine = getEngine;
+  window.setEngine = setEngine;
+})();
 </script>
 
-<script data-pae-removed="true" type="text/plain">
-  /*! REMOVED v7.1 */
-  (function() {
-    if (window.__paeV71Installed) { return; }
-    window.__paeV71Installed = true;
-    
-    var _log = function(msg) { try { console.log('[pae-v71]', msg); } catch(e){} };
-    
-    // FIX 1: Remove theme button divider
-    function removeThemeDivider() {
-      if (document.getElementById('__pae_v71_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v71_styles';
-      st.textContent = '#themeToggleBtn::before { display: none !important; content: none !important; }';
-      document.head.appendChild(st);
-      _log('theme divider removed');
+<!-- S3: Engine Adapter (Video) (2026-05-06) -->
+<script>
+(function(){
+  if (window.__vidEngineAdapterInstalled) return;
+  window.__vidEngineAdapterInstalled = true;
+
+  var VID_ADAPTERS = {
+    kling: {
+      name: 'Kling',
+      emoji: '🎬',
+      format: function(t){ return t; }
+    },
+    pika: {
+      name: 'Pika',
+      emoji: '🌀',
+      format: function(t){ return pikaFormat(t); }
+    },
+    runway: {
+      name: 'Runway',
+      emoji: '🚀',
+      format: function(t){ return runwayFormat(t); }
+    },
+    // S10: 3 new engines (Veo, Luma, Hailuo) — 2026-05-06
+    veo: {
+      name: 'Veo',
+      emoji: '🟢',
+      format: function(t){ return veoFormat(t); }
+    },
+    luma: {
+      name: 'Luma',
+      emoji: '🌙',
+      format: function(t){ return lumaFormat(t); }
+    },
+    hailuo: {
+      name: 'Hailuo',
+      emoji: '⚡',
+      format: function(t){ return hailuoFormat(t); }
     }
-    
-    // Clean share message builder (no asterisks, no dividers)
-    function buildCleanShare(promptText, lang) {
-      if (lang === 'en') {
-        return [
-          '🎨 I created a prompt with Palette AI',
-          '',
-          '📖 What is Palette AI?',
-          'A free Hebrew app that helps build professional prompts for AI image generators (like Nano Banana, Midjourney, or ChatGPT).',
-          '',
-          '✨ How does it work?',
-          'You write in plain Hebrew like "a cat drinking coffee",',
-          'and the app converts it into a professional English prompt',
-          'with all the keywords and styles that actually work.',
-          '',
-          '👇 My prompt:',
-          '',
-          promptText,
-          '',
-          '💡 Want to try?',
-          '1. Open the link',
-          '2. Write an idea + pick a style',
-          '3. Copy the result to your AI tool',
-          '',
-          '🔗 https://t1ptip.github.io/palette-ai',
-          '(no signup, works on mobile too)'
-        ].join('\n');
-      } else {
-        return [
-          '🎨 יצרתי פרומפט עם Palette AI',
-          '',
-          '📖 מה זה Palette AI?',
-          'אפליקציה חינמית בעברית שעוזרת לבנות פרומפטים מקצועיים למחוללי תמונות AI (כמו Nano Banana, Midjourney או ChatGPT).',
-          '',
-          '✨ איך זה עובד?',
-          'כותבים בעברית פשוטה "חתול שותה קפה",',
-          'והאפליקציה מתרגמת לפרומפט מקצועי באנגלית',
-          'עם כל הטריקים והסגנונות שבאמת עובדים.',
-          '',
-          '👇 הפרומפט שיצרתי:',
-          '',
-          promptText,
-          '',
-          '💡 רוצים לנסות?',
-          '1. פותחים את הקישור',
-          '2. כותבים רעיון + בוחרים סגנון',
-          '3. מעתיקים את התוצאה לכלי ה-AI',
-          '',
-          '🔗 https://t1ptip.github.io/palette-ai',
-          '(לא צריך להירשם, עובד גם בנייד)'
-        ].join('\n');
-      }
+  };
+
+  // === Adapters helpers ===
+  function pikaFormat(t){
+    var withFps = /-fps\s/.test(t) ? t : (t.replace(/\s*$/, '') + ' -fps 24 -ar 16:9');
+    return withFps.replace(/--dur\s+(\d+)s?/g, '-dur $1');
+  }
+  function runwayFormat(t){
+    var durMatch = t.match(/--dur\s+(\d+)/);
+    var stripped = t.replace(/--dur\s+\S+/g, '').replace(/\s+/g, ' ').trim().replace(/,\s*$/, '');
+    if (durMatch) stripped += ', ' + durMatch[1] + ' second duration';
+    return stripped;
+  }
+
+  // S10 helpers (2026-05-06) ===
+  // Veo (Google Gemini): text-based prose, duration as prefix sentence, bracket notation stripped
+  function veoFormat(t){
+    var durMatch = t.match(/--dur\s+(\d+)/);
+    // Strip [CAMERA: ...] / [SHOT: ...] brackets and convert to natural language
+    var stripped = t
+      .replace(/--dur\s+\S+/g, '')
+      .replace(/\[(\w+):\s*([^\]]+)\]/g, '$2')   // [CAMERA: dolly] → dolly
+      .replace(/,\s*,/g, ',')                     // Collapse double commas
+      .replace(/\s+/g, ' ').trim().replace(/,\s*$/, '').replace(/^,\s*/, '');
+    if (durMatch) {
+      stripped = durMatch[1] + '-second video: ' + stripped;
     }
-    
-    // FIX 2: FORCE OVERRIDE sharePrompt with a RETRY LOOP that keeps checking every 300ms
-    // for up to 10 seconds, and overrides whatever sharePrompt is currently set to.
-    var overrideAttempts = 0;
-    var MAX_ATTEMPTS = 33; // 33 * 300ms = ~10 seconds
-    
-    function forceOverrideShare() {
-      overrideAttempts++;
-      
-      if (typeof window.sharePrompt !== 'function') {
-        if (overrideAttempts < MAX_ATTEMPTS) {
-          setTimeout(forceOverrideShare, 300);
-        }
-        return;
-      }
-      
-      // Check if already the v7.1 version
-      var currentStr = window.sharePrompt.toString();
-      if (currentStr.indexOf('__paeV71_shareInstalled') !== -1) {
-        _log('v7.1 share already installed');
-        return;
-      }
-      
-      // OVERRIDE — no matter what v7.0 or others did
-      window.sharePrompt = function() {
-        // Marker for future overrides to detect
-        var __paeV71_shareInstalled = true;
-        try {
-          var finalEl = document.getElementById('finalPrompt');
-          var promptText = finalEl ? finalEl.textContent.trim() : '';
-          
-          if (!promptText || promptText.length < 5) {
-            var lang0 = document.documentElement.getAttribute('lang') || 'he';
-            var emptyMsg = lang0 === 'en' ? 'Nothing to share yet! Generate a prompt first.' : 'אין מה לשתף עדין! צרו פרומפט קודם.';
-            try { alert(emptyMsg); } catch(e){}
-            return;
-          }
-          
-          var currentLang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
-          var message = buildCleanShare(promptText, currentLang);
-          
-          if (navigator.share) {
-            navigator.share({ title: 'Palette AI', text: message }).catch(function(err) {
-              _log('share failed: ' + err.message);
-              fallbackCopy(message, currentLang);
-            });
-          } else {
-            fallbackCopy(message, currentLang);
-          }
-        } catch(e) { _log('share err: ' + e.message); }
-      };
-      
-      _log('v7.1 share OVERRIDDEN (attempt ' + overrideAttempts + ')');
-      
-      // Keep retrying a few more times to catch any later overrides from other versions
-      if (overrideAttempts < 5) {
-        setTimeout(forceOverrideShare, 500);
-      }
+    return stripped;
+  }
+  // Luma (Dream Machine): clean prose, motion-focused, --dur becomes natural language suffix
+  function lumaFormat(t){
+    var durMatch = t.match(/--dur\s+(\d+)/);
+    var stripped = t
+      .replace(/--dur\s+\S+/g, '')
+      .replace(/\[(\w+):\s*([^\]]+)\]/g, '$2')   // [CAMERA: dolly] → dolly (no leading comma to prevent double commas)
+      .replace(/,\s*,/g, ',')                     // Collapse double commas (e.g., 'glacier, , dolly' → 'glacier, dolly')
+      .replace(/\s+/g, ' ').trim().replace(/,\s*$/, '').replace(/^,\s*/, '');
+    if (durMatch) {
+      stripped += ' (duration: ' + durMatch[1] + 's)';
     }
-    
-    function fallbackCopy(message, lang) {
+    return stripped;
+  }
+  // Hailuo (MiniMax): emphasizes structured prompts, dur as standalone tag
+  function hailuoFormat(t){
+    var durMatch = t.match(/--dur\s+(\d+)/);
+    var stripped = t
+      .replace(/--dur\s+\S+/g, '')
+      .replace(/\[(\w+):\s*([^\]]+)\]/g, '$2')   // brackets stripped
+      .replace(/,\s*,/g, ',')                     // Collapse double commas
+      .replace(/\s+/g, ' ').trim().replace(/,\s*$/, '').replace(/^,\s*/, '');
+    if (durMatch) {
+      stripped = '[Duration: ' + durMatch[1] + 's] ' + stripped;
+    }
+    return stripped;
+  }
+
+  // === State ===
+  function getVidEngine(){
+    try { return localStorage.getItem('paeVidEngine') || 'kling'; }
+    catch(e) { return 'kling'; }
+  }
+  function setVidEngine(key){
+    if (!VID_ADAPTERS[key]) return;
+    try { localStorage.setItem('paeVidEngine', key); } catch(e) {}
+    updateActiveVidTab();
+  }
+  function updateActiveVidTab(){
+    var current = getVidEngine();
+    var bar = document.getElementById('vidEngineBar');
+    if (!bar) return;
+    bar.querySelectorAll('.engine-tab').forEach(function(btn){
+      var isActive = btn.dataset.eng === current;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+  }
+
+  // === UI Injection (S17 final 2026-05-07: inline buttons only, no label, no dropdown) ===
+  // S18 (deploy QA): same race fix as IMG — anchor changed from .vid-action-row to
+  // #vidPage .action-row so engine bar appears ABOVE copy button (matching IMG mode).
+  function injectVidEngineBar(){
+    var vidPage = document.getElementById('vidPage');
+    if (!vidPage) return false;
+    var actionRow = vidPage.querySelector('.action-row');
+    if (!actionRow) return false;
+    var bar = document.getElementById('vidEngineBar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'engine-bar';
+      bar.id = 'vidEngineBar';
+      bar.setAttribute('role', 'tablist');
+      Object.keys(VID_ADAPTERS).forEach(function(key){
+        var a = VID_ADAPTERS[key];
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'engine-tab';
+        btn.dataset.eng = key;
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-label', a.name);
+        btn.innerHTML = '<span class="engine-tab-emoji">' + a.emoji + '</span><span>' + a.name + '</span>';
+        btn.addEventListener('click', function(){ setVidEngine(key); });
+        bar.appendChild(btn);
+      });
+    }
+    // Ensure bar is the immediate sibling BEFORE action-row (defense-in-depth)
+    if (bar.nextElementSibling !== actionRow || bar.parentNode !== actionRow.parentNode) {
+      actionRow.parentNode.insertBefore(bar, actionRow);
+    }
+    updateActiveVidTab();
+    return true;
+  }
+  var _vidEngineBarBootAttempts = 0;
+  function tryInjectBar(){
+    _vidEngineBarBootAttempts++;
+    injectVidEngineBar(); // idempotent — also re-positions if needed
+    if (_vidEngineBarBootAttempts < 15) setTimeout(tryInjectBar, 300);
+  }
+
+  // === Replace copyVideoPrompt entirely (state.lastVideoPrompt is private) ===
+  function installVidCopyWrapper(){
+    var orig = window.copyVideoPrompt;
+    if (!orig || orig.__vidEngineWrapped) return false;
+    var wrapped = async function(){
+      var fp = document.getElementById('vidFinalPrompt');
+      if (!fp) return orig.apply(this, arguments);
+      var origText = (fp.textContent || '').trim();
+      // Skip if empty/placeholder/translating — let original handle
+      if (!origText || origText.length < 5 || /^✨|☃|לחץ/.test(origText) || /^מתרגם|^Translating/.test(origText)) {
+        return orig.apply(this, arguments);
+      }
+      var adapted = VID_ADAPTERS[getVidEngine()].format(origText);
+      // Copy adapted text directly
+      var copied = false;
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(message).then(function() {
-            showToast(lang);
-          }).catch(function() { legacyCopy(message, lang); });
-        } else {
-          legacyCopy(message, lang);
+          await navigator.clipboard.writeText(adapted);
+          copied = true;
         }
-      } catch(e) { legacyCopy(message, lang); }
-    }
-    
-    function legacyCopy(message, lang) {
-      try {
-        var ta = document.createElement('textarea');
-        ta.value = message;
-        ta.style.cssText = 'position:fixed;left:-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); } catch(e){}
-        document.body.removeChild(ta);
-        showToast(lang);
       } catch(e) {}
-    }
-    
-    function showToast(lang) {
-      var msg = lang === 'en' ? '✓ Copied! Ready to share' : '✓ הועתק! מוכן לשיתוף';
-      var existing = document.getElementById('__v71_toast');
-      if (existing) existing.remove();
-      var toast = document.createElement('div');
-      toast.id = '__v71_toast';
-      toast.setAttribute('role', 'status');
-      toast.textContent = msg;
-      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:600;z-index:100000;box-shadow:0 4px 20px rgba(16,185,129,0.4);font-family:inherit';
-      document.body.appendChild(toast);
-      setTimeout(function() { toast.remove(); }, 2500);
-    }
-    
-    function boot() {
-      removeThemeDivider();
-      forceOverrideShare();
-      _log('v7.1 boot complete (divider removed + share override scheduled)');
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot);
-    } else {
-      boot();
-    }
-  })();
-</script>
-
-<script data-pae-removed="true" type="text/plain">
-  /*! REMOVED v7.0 */
-  (function() {
-    if (window.__paeV70Installed) { return; }
-    window.__paeV70Installed = true;
-    
-    var _log = function(msg) { try { console.log('[pae-v7]', msg); } catch(e){} };
-    
-    // =============================================
-    // FIX 1: Header toggle spacing
-    // =============================================
-    function installToggleSpacing() {
-      if (document.getElementById('__pae_v70_styles')) return;
-      var st = document.createElement('style');
-      st.id = '__pae_v70_styles';
-      st.textContent = [
-        '/* v7.0: visual separation between lang toggle and theme toggle */',
-        '#themeToggleBtn {',
-        '  margin-inline-start: 14px !important;',
-        '  position: relative;',
-        '}',
-        '#themeToggleBtn::before {',
-        '  content: "";',
-        '  position: absolute;',
-        '  inset-inline-start: -8px;',
-        '  top: 20%;',
-        '  bottom: 20%;',
-        '  width: 1px;',
-        '  background: rgba(255, 255, 255, 0.12);',
-        '  pointer-events: none;',
-        '}',
-        'body.light-mode #themeToggleBtn::before,',
-        '[data-theme="light"] #themeToggleBtn::before {',
-        '  background: rgba(0, 0, 0, 0.15);',
-        '}'
-      ].join('\n');
-      document.head.appendChild(st);
-      _log('toggle spacing installed');
-    }
-    
-    // =============================================
-    // FIX 2: Share-with-context (Nano Banana first, with headers)
-    // =============================================
-    function buildShareMessage(promptText, lang) {
-      var isEN = lang === 'en';
-      var DIVIDER = '━━━━━━━━━━━━━━━━━';
-      
-      if (isEN) {
-        return [
-          DIVIDER,
-          '🎨 *I created a prompt with Palette AI*',
-          DIVIDER,
-          '',
-          '*📖 What is Palette AI?*',
-          '',
-          'A free Hebrew app that helps build professional prompts for AI image generators (like Nano Banana, Midjourney, or ChatGPT).',
-          '',
-          '*✨ How does it work?*',
-          '',
-          'You write in plain Hebrew like "a cat drinking coffee",',
-          'and the app converts it into a professional English prompt',
-          'with all the keywords and styles that actually work.',
-          '',
-          DIVIDER,
-          '*👇 My prompt:*',
-          DIVIDER,
-          '',
-          promptText,
-          '',
-          DIVIDER,
-          '*💡 Want to try?*',
-          DIVIDER,
-          '',
-          '1. Open the link',
-          '2. Write an idea + pick a style',
-          '3. Copy the result to your AI tool',
-          '',
-          '🔗 https://t1ptip.github.io/palette-ai',
-          '_(no signup, works on mobile too)_'
-        ].join('\n');
-      } else {
-        return [
-          DIVIDER,
-          '🎨 *יצרתי פרומפט עם Palette AI*',
-          DIVIDER,
-          '',
-          '*📖 מה זה Palette AI?*',
-          '',
-          'אפליקציה חינמית בעברית שעוזרת לבנות פרומפטים מקצועיים למחוללי תמונות AI (כמו Nano Banana, Midjourney או ChatGPT).',
-          '',
-          '*✨ איך זה עובד?*',
-          '',
-          'כותבים בעברית פשוטה "חתול שותה קפה",',
-          'והאפליקציה מתרגמת לפרומפט מקצועי באנגלית',
-          'עם כל הטריקים והסגנונות שבאמת עובדים.',
-          '',
-          DIVIDER,
-          '*👇 הפרומפט שיצרתי:*',
-          DIVIDER,
-          '',
-          promptText,
-          '',
-          DIVIDER,
-          '*💡 רוצים לנסות?*',
-          DIVIDER,
-          '',
-          '1. פותחים את הקישור',
-          '2. כותבים רעיון + בוחרים סגנון',
-          '3. מעתיקים את התוצאה לכלי ה-AI',
-          '',
-          '🔗 https://t1ptip.github.io/palette-ai',
-          '_(לא צריך להירשם, עובד גם בנייד)_'
-        ].join('\n');
-      }
-    }
-    
-    function installShareContext() {
-      if (typeof window.sharePrompt !== 'function') {
-        setTimeout(installShareContext, 500);
-        return;
-      }
-      if (window.__paeV70_shareWrapped) return;
-      window.__paeV70_shareWrapped = true;
-      
-      window.sharePrompt = function() {
+      if (!copied) {
         try {
-          var finalEl = document.getElementById('finalPrompt');
-          var promptText = finalEl ? finalEl.textContent.trim() : '';
-          
-          if (!promptText || promptText.length < 5) {
-            // Empty prompt — fall back to showing a warning
-            var lang = document.documentElement.getAttribute('lang') || 'he';
-            var emptyMsg = lang === 'en' ? 'Nothing to share yet! Generate a prompt first.' : 'אין מה לשתף עדין! צרו פרומפט קודם.';
-            try { alert(emptyMsg); } catch(e){}
-            return;
-          }
-          
-          var currentLang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
-          var message = buildShareMessage(promptText, currentLang);
-          
-          // Use Web Share API if available, else fallback to copy+notify
-          if (navigator.share) {
-            navigator.share({
-              title: 'Palette AI',
-              text: message
-            }).catch(function(err) {
-              // User cancelled or error — fallback to copy
-              _log('share API failed: ' + err.message);
-              fallbackCopy(message, currentLang);
-            });
-          } else {
-            fallbackCopy(message, currentLang);
-          }
-        } catch(e) {
-          _log('sharePrompt error: ' + e.message);
-        }
-      };
-      _log('sharePrompt wrapped with context (Nano Banana first)');
-    }
-    
-    function fallbackCopy(message, lang) {
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(message).then(function() {
-            showShareToast(lang);
-          }).catch(function() {
-            legacyFallback(message, lang);
-          });
-        } else {
-          legacyFallback(message, lang);
-        }
-      } catch(e) {
-        legacyFallback(message, lang);
-      }
-    }
-    
-    function legacyFallback(message, lang) {
-      try {
-        var ta = document.createElement('textarea');
-        ta.value = message;
-        ta.style.cssText = 'position:fixed;left:-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); } catch(e){}
-        document.body.removeChild(ta);
-        showShareToast(lang);
-      } catch(e) {
-        _log('legacyFallback error: ' + e.message);
-      }
-    }
-    
-    function showShareToast(lang) {
-      var msg = lang === 'en' ? '✓ Copied! Ready to share' : '✓ הועתק! מוכן לשיתוף';
-      var existing = document.getElementById('__v70_share_toast');
-      if (existing) existing.remove();
-      var toast = document.createElement('div');
-      toast.id = '__v70_share_toast';
-      toast.setAttribute('role', 'status');
-      toast.setAttribute('aria-live', 'polite');
-      toast.textContent = msg;
-      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:600;z-index:100000;box-shadow:0 4px 20px rgba(16,185,129,0.4);font-family:inherit';
-      document.body.appendChild(toast);
-      setTimeout(function() { toast.remove(); }, 2500);
-    }
-    
-    // =============================================
-    // BOOT
-    // =============================================
-    function boot() {
-      installToggleSpacing();
-      installShareContext();
-      _log('v7.0 installed (toggle spacing + share with context)');
-    }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot);
-    } else {
-      boot();
-    }
-  })();
-</script>
-
-<script data-pae-removed="true" type="text/plain">
-  /*! REMOVED v6.2 */
-  (function() {
-    if (window.__paeV62Installed) { return; }
-    window.__paeV62Installed = true;
-    
-    var FLAGS = { paybox: false, langReload: false };
-    var _log = function(msg) { try { console.log('[pae-v62]', msg); } catch(e){} };
-    
-    function isDesktop() {
-      var ua = navigator.userAgent || '';
-      var isIOS = /iPhone|iPad|iPod/i.test(ua);
-      var isAndroid = /Android/i.test(ua);
-      var isMobileWidth = window.innerWidth < 768 && 'ontouchstart' in window;
-      return !(isIOS || isAndroid || isMobileWidth);
-    }
-    
-    function installPayBoxDesktopFix() {
-      if (FLAGS.paybox) return;
-      if (typeof window.doPayBox !== 'function') {
-        setTimeout(installPayBoxDesktopFix, 500);
-        return;
-      }
-      var origDoPayBox = window.doPayBox;
-      window.doPayBox = function() {
-        if (!isDesktop()) {
-          return origDoPayBox.apply(this, arguments);
-        }
-        showDesktopPayBoxModal();
-      };
-      FLAGS.paybox = true;
-      _log('PayBox desktop fallback installed');
-    }
-    
-    function showDesktopPayBoxModal() {
-      var existing = document.getElementById('__pb_desktop_modal');
-      if (existing) existing.remove();
-      
-      var isRTL = (document.documentElement.getAttribute('dir') !== 'ltr');
-      var currentLang = document.documentElement.getAttribute('lang') || 'he';
-      var T = currentLang === 'he' ? {
-        title: 'פנקו אותי בבירה 🍺',
-        subtitle: 'סרקו את ה-QR בנייד כדי לפתוח את PayBox',
-        orText: 'או העתיקו את הלינק ופתחו בנייד:',
-        openMobile: 'נסו בכל זאת אולי ✊',
-        copyLink: 'העתק לינק',
-        copied: 'הועתק! ✓',
-        close: 'סגור',
-        tipNote: 'PayBox עובד רק דרך האפליקציה בנייד'
-      } : {
-        title: 'Buy me a beer 🍺',
-        subtitle: 'Scan the QR with your phone to open PayBox',
-        orText: 'Or copy the link and open on your phone:',
-        openMobile: 'Try opening anyway ✊',
-        copyLink: 'Copy link',
-        copied: 'Copied! ✓',
-        close: 'Close',
-        tipNote: 'PayBox only works via the mobile app'
-      };
-      
-      var payboxUrl = (window.PAYBOX_URL) || 'https://links.payboxapp.com/hbbbRHMn91b';
-      
-      var overlay = document.createElement('div');
-      overlay.id = '__pb_desktop_modal';
-      overlay.setAttribute('role', 'dialog');
-      overlay.setAttribute('aria-modal', 'true');
-      overlay.setAttribute('aria-labelledby', '__pb_modal_title');
-      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99998;display:flex;align-items:center;justify-content:center;padding:20px;direction:' + (isRTL ? 'rtl' : 'ltr') + ';backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)';
-      
-      var box = document.createElement('div');
-      box.style.cssText = 'background:linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);color:#fff;border-radius:18px;padding:28px;max-width:440px;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.1);position:relative';
-      
-      var header = document.createElement('div');
-      header.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px';
-      var titleBox = document.createElement('div');
-      titleBox.style.cssText = 'flex:1';
-      var h3 = document.createElement('h3');
-      h3.id = '__pb_modal_title';
-      h3.textContent = T.title;
-      h3.style.cssText = 'font-size:22px;font-weight:700;margin:0 0 4px 0;line-height:1.2';
-      var p = document.createElement('p');
-      p.textContent = T.subtitle;
-      p.style.cssText = 'font-size:14px;opacity:0.75;margin:0;line-height:1.4';
-      titleBox.appendChild(h3);
-      titleBox.appendChild(p);
-      
-      var closeBtn = document.createElement('button');
-      closeBtn.textContent = '✕';
-      closeBtn.setAttribute('aria-label', T.close);
-      closeBtn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center';
-      closeBtn.onclick = function() { overlay.remove(); };
-      header.appendChild(titleBox);
-      header.appendChild(closeBtn);
-      box.appendChild(header);
-      
-      var qrSize = 220;
-      var qrImg = document.createElement('img');
-      qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=' + qrSize + 'x' + qrSize + '&data=' + encodeURIComponent(payboxUrl) + '&bgcolor=ffffff&color=1a1a2e&margin=10';
-      qrImg.alt = 'QR code for PayBox';
-      qrImg.style.cssText = 'display:block;width:' + qrSize + 'px;height:' + qrSize + 'px;margin:10px auto 18px;background:#fff;border-radius:12px;padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
-      box.appendChild(qrImg);
-      
-      var btnRow = document.createElement('div');
-      btnRow.style.cssText = 'display:flex;gap:10px;flex-direction:column';
-      
-      var openBtn = document.createElement('button');
-      openBtn.textContent = T.openMobile;
-      openBtn.style.cssText = 'padding:14px;background:linear-gradient(135deg, #007aff, #00a3ff);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;min-height:44px;width:100%';
-      openBtn.onclick = function() { window.open(payboxUrl, '_blank', 'noopener,noreferrer'); };
-      btnRow.appendChild(openBtn);
-      
-      var copyBtn = document.createElement('button');
-      copyBtn.textContent = T.copyLink;
-      copyBtn.style.cssText = 'padding:12px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;min-height:44px;width:100%';
-      copyBtn.onclick = function() {
-        try {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(payboxUrl).then(function() {
-              copyBtn.textContent = T.copied;
-              setTimeout(function(){ copyBtn.textContent = T.copyLink; }, 1800);
-            });
-          } else {
-            var ta = document.createElement('textarea');
-            ta.value = payboxUrl;
-            ta.style.cssText = 'position:fixed;left:-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            try { document.execCommand('copy'); } catch(e){}
-            document.body.removeChild(ta);
-            copyBtn.textContent = T.copied;
-            setTimeout(function(){ copyBtn.textContent = T.copyLink; }, 1800);
-          }
+          var ta = document.createElement('textarea');
+          ta.value = adapted;
+          ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); copied = true; } catch(e){}
+          document.body.removeChild(ta);
         } catch(e) {}
-      };
-      btnRow.appendChild(copyBtn);
-      box.appendChild(btnRow);
-      
-      var note = document.createElement('p');
-      note.textContent = T.tipNote;
-      note.style.cssText = 'font-size:12px;opacity:0.6;margin:14px 0 0;text-align:center;line-height:1.5';
-      box.appendChild(note);
-      
-      overlay.appendChild(box);
-      document.body.appendChild(overlay);
-      
-      var escH = function(e) {
-        if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escH); }
-      };
-      document.addEventListener('keydown', escH);
-      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-      setTimeout(function(){ closeBtn.focus(); }, 50);
-    }
-    
-    function installLangAutoReload() {
-      if (FLAGS.langReload) return;
-      if (typeof window.setLang !== 'function') {
-        setTimeout(installLangAutoReload, 500);
-        return;
       }
-      
-      var origSetLang = window.setLang;
-      window.setLang = function(lang) {
-        var prevLang = document.documentElement.getAttribute('lang');
-        if (prevLang === lang) return origSetLang.apply(this, arguments);
-        
-        window.__paeV62_suppressLangToast = true;
-        var result = origSetLang.apply(this, arguments);
-        showAutoReloadToast(lang);
-        setTimeout(function() { try { location.reload(); } catch(e) {} }, 500);
-        return result;
-      };
-      
-      var obs = new MutationObserver(function(mutations) {
-        if (!window.__paeV62_suppressLangToast) return;
-        mutations.forEach(function(m) {
-          m.addedNodes.forEach(function(node) {
-            if (node.nodeType !== 1) return;
-            var nid = (node.id || '') + ' ' + (node.className || '');
-            if (/lang.*reload|lang.*hint|langReloadHint/i.test(nid)) {
-              node.remove();
-              _log('suppressed v6 lang toast');
-            }
-          });
-        });
+      // UI feedback (replicate original behavior)
+      var btn = document.getElementById('vidCopyBtn');
+      if (btn) {
+        btn.classList.add('copied');
+        setTimeout(function(){ btn.classList.remove('copied'); }, 1200);
+      }
+      var toastEl = document.getElementById('toast');
+      if (!toastEl) {
+        toastEl = document.createElement('div');
+        toastEl.id = 'toast';
+        document.body.appendChild(toastEl);
+      }
+      var lang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
+      toastEl.textContent = (lang === 'en' ? '✅ Copied!' : '✅ הועתק!');
+      toastEl.className = 'show';
+      clearTimeout(window.__vidEngToastT);
+      window.__vidEngToastT = setTimeout(function(){ toastEl.classList.remove('show'); }, 3500);
+      // Save to history (use ORIGINAL prompt, not adapted)
+      try {
+        var key = 'paeVidHistory';
+        var arr = [];
+        try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+        arr.unshift({ prompt: origText, ts: Date.now() });
+        if (arr.length > 50) arr = arr.slice(0, 50);
+        localStorage.setItem(key, JSON.stringify(arr));
+      } catch(e) {}
+      return true;
+    };
+    wrapped.__vidEngineWrapped = true;
+    window.copyVideoPrompt = wrapped;
+    return true;
+  }
+  function tryInstallVidWrapper(){
+    if (installVidCopyWrapper()) return;
+    setTimeout(tryInstallVidWrapper, 300);
+  }
+
+  function boot(){
+    tryInjectBar();
+    tryInstallVidWrapper();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  window.VID_ADAPTERS = VID_ADAPTERS;
+  window.getVidEngine = getVidEngine;
+  window.setVidEngine = setVidEngine;
+})();
+</script>
+
+<!-- S20: VID actions unification — match IMG layout 1:1 (2026-05-08) -->
+<!-- (1) Move share+clear into single .action-row (with copy)
+     (2) Hide empty .vid-action-row
+     (3) Update vidPromptLbl text → IMG "פרומפט מוכן להעתקה"
+     (4) Update vidFinalPrompt empty placeholder → IMG style -->
+<script>
+(function(){
+  if (window.__vidActionsUnifiedInstalled) return;
+  window.__vidActionsUnifiedInstalled = true;
+
+  function _getLang(){
+    return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he';
+  }
+
+  function unifyVidActions(){
+    var vidPage = document.getElementById('vidPage');
+    if (!vidPage) return false;
+    var actionRow = vidPage.querySelector('.action-row');
+    if (!actionRow) return false;
+
+    // Step 1: Migrate vidShareBtn + vidClearBtn into action-row (idempotent)
+    var vidActionRow = vidPage.querySelector('.vid-action-row');
+    var shareBtn = document.getElementById('vidShareBtn');
+    var clearBtn = document.getElementById('vidClearBtn');
+    if (shareBtn && shareBtn.parentNode !== actionRow) {
+      actionRow.appendChild(shareBtn);
+    }
+    if (clearBtn && clearBtn.parentNode !== actionRow) {
+      actionRow.appendChild(clearBtn);
+    }
+    // Step 2: Hide now-empty vid-action-row
+    if (vidActionRow) vidActionRow.style.display = 'none';
+
+    // Step 3: Update label text to match IMG (1:1)
+    var lang = _getLang();
+    var pl = document.getElementById('vidPromptLbl');
+    if (pl) {
+      var newLabel = lang === 'en' ? 'Prompt ready to copy' : 'פרומפט מוכן להעתקה';
+      if (pl.textContent !== newLabel) pl.textContent = newLabel;
+    }
+
+    // Step 4: Update empty placeholder to match IMG (1:1) — only if currently in empty state
+    var fp = document.getElementById('vidFinalPrompt');
+    if (fp && fp.classList.contains('empty')) {
+      var newPlaceholder = lang === 'en'
+        ? '✨ The prompt will appear here — click 📋 Copy prompt and open your AI engine'
+        : '✨ הפרומפט יופיע כאן — לחץ/י על 📋 העתק/י פרומפט ופתח/י את מנוע ה-AI שלך';
+      if (fp.textContent !== newPlaceholder) fp.textContent = newPlaceholder;
+    }
+
+    return true;
+  }
+
+  var _vidActionsAttempts = 0;
+  function tryUnify(){
+    _vidActionsAttempts++;
+    unifyVidActions();
+    // Keep polling 4.5s to outlast pae-video boot loop (12 × 400ms = 4.8s)
+    if (_vidActionsAttempts < 15) setTimeout(tryUnify, 300);
+  }
+
+  // Re-run on lang change (pae-video resets labels on lang change)
+  function observeLangChanges(){
+    new MutationObserver(function(){
+      setTimeout(unifyVidActions, 100);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      tryUnify();
+      observeLangChanges();
+    });
+  } else {
+    tryUnify();
+    observeLangChanges();
+  }
+})();
+</script>
+
+<!-- S4: Prompt Strength Meter (2026-05-06) -->
+<style>
+.str-meter{display:flex;flex-direction:column;gap:4px;padding:6px 0 2px}
+.str-meter-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}
+.str-meter-lbl{color:var(--muted);font-weight:500;display:flex;align-items:center;gap:4px}
+.str-meter-val{color:var(--text);font-weight:600;display:flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+.str-meter-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;position:relative}
+.str-meter-fill{height:100%;border-radius:3px;transition:width .35s cubic-bezier(.4,0,.2,1),background .25s;width:0%}
+.str-fill-weak{background:linear-gradient(90deg,#ef4444,#f87171)}
+.str-fill-fair{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.str-fill-good{background:linear-gradient(90deg,#10b981,#34d399)}
+.str-fill-excellent{background:linear-gradient(90deg,#3b82f6,#60a5fa,#a78bfa)}
+.str-meter-tip{font-size:10px;color:var(--muted);font-style:italic;margin-top:1px;line-height:1.4;display:none}
+.str-meter-tip.show{display:block}
+[data-theme="light"] .str-meter-bar{background:var(--surface2)}
+</style>
+<script>
+(function(){
+  if (window.__strengthMeterInstalled) return;
+  window.__strengthMeterInstalled = true;
+
+  // === Detection patterns (case-insensitive) ===
+  var STYLE_KEYWORDS = /photorealistic|watercolor|oil painting|anime|cinematic|comic|pixel|3d render|cyberpunk|fantasy|portrait|illustration|sketch|noir|impressionist|surreal|abstract|vintage|retro|minimalist|dreamy|ghibli|pixar|disney|manga/i;
+  var LIGHTING_KEYWORDS = /golden hour|neon|soft (light|natural)|sunset|sunrise|daylight|twilight|moonlight|backlit|rim light|dramatic light|ambient|volumetric|chiaroscuro|silhouette|haze|glow|hdr|low light|night scene|תאורה|זריחה|שקיעה|ירח/i;
+  var CAMERA_KEYWORDS = /close-?up|wide shot|dolly|zoom|pov|aerial|bird'?s eye|orbit|tracking|handheld|crane|macro|tilt|pan|fisheye|telephoto|low angle|high angle|over the shoulder|מצלמה|זום|תקריב/i;
+  var QUALITY_KEYWORDS = /4k|8k|hd|sharp|detailed|hyperdetailed|masterpiece|best quality|professional|award.?winning|trending|artstation|highly detailed|crisp|ultra/i;
+
+  // === i18n labels ===
+  var T = {
+    label: { he: 'עוצמת הפרומפט', en: 'Prompt strength' },
+    weak: { he: 'חלש', en: 'Weak' },
+    fair: { he: 'בינוני', en: 'Fair' },
+    good: { he: 'טוב', en: 'Good' },
+    excellent: { he: 'מצוין', en: 'Excellent' },
+    tipSubject: { he: 'הוסיף תיאור מפורט של הנושא', en: 'Add a detailed subject description' },
+    tipStyle: { he: 'הוסיף סגנון (photorealistic, watercolor)', en: 'Add a style (photorealistic, watercolor)' },
+    tipLighting: { he: 'הוסיף תאורה (golden hour, soft light)', en: 'Add lighting (golden hour, soft light)' },
+    tipCamera: { he: 'הוסיף מצלמה (close-up, wide shot)', en: 'Add camera (close-up, wide shot)' },
+    tipQuality: { he: 'הוסיף משפרי איכות (4k, sharp, detailed)', en: 'Add quality boosters (4k, sharp, detailed)' },
+    tipShort: { he: 'הפרומפט קצר מדי — הוסיף פרטים', en: 'Prompt is too short — add details' },
+    tipPerfect: { he: 'פרומפט מצוין! 🚀', en: 'Excellent prompt! 🚀' }
+  };
+  function getLang(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
+  function tr(k){ var l = getLang(); return T[k] && T[k][l] || (T[k] && T[k].he) || k; }
+
+  // === Calculator ===
+  function calculateStrength(text){
+    if (!text || typeof text !== 'string') return { score: 0, components: {}, tips: [] };
+    var clean = text.replace(/--\w+\s+\S+/g, '').replace(/-fps|-ar|-dur|-seed/g, '').trim();
+    var words = clean.split(/\s+/).filter(Boolean);
+    var len = clean.length;
+    var components = {
+      subject: words.length >= 4 ? 25 : Math.round(words.length * 6.25),
+      style: STYLE_KEYWORDS.test(clean) ? 20 : 0,
+      lighting: LIGHTING_KEYWORDS.test(clean) ? 15 : 0,
+      camera: CAMERA_KEYWORDS.test(clean) ? 15 : 0,
+      quality: QUALITY_KEYWORDS.test(clean) ? 15 : 0,
+      length: (len >= 50 && len <= 350) ? 10 : (len >= 30 ? 5 : 0)
+    };
+    var score = Math.min(100, components.subject + components.style + components.lighting + components.camera + components.quality + components.length);
+    var tips = [];
+    if (len < 30) tips.push('tipShort');
+    else {
+      if (components.subject < 25) tips.push('tipSubject');
+      if (components.style === 0) tips.push('tipStyle');
+      if (components.lighting === 0) tips.push('tipLighting');
+      if (components.camera === 0) tips.push('tipCamera');
+      if (components.quality === 0) tips.push('tipQuality');
+    }
+    if (score >= 90 && tips.length === 0) tips.push('tipPerfect');
+    return { score: score, components: components, tips: tips };
+  }
+
+  function tierFor(score){
+    if (score >= 80) return { key: 'excellent', emoji: '🌟', cls: 'str-fill-excellent' };
+    if (score >= 55) return { key: 'good', emoji: '🟢', cls: 'str-fill-good' };
+    if (score >= 30) return { key: 'fair', emoji: '🟡', cls: 'str-fill-fair' };
+    return { key: 'weak', emoji: '🔴', cls: 'str-fill-weak' };
+  }
+
+  // === UI Builder ===
+  function buildMeter(idSuffix){
+    var div = document.createElement('div');
+    div.className = 'str-meter';
+    div.id = 'strMeter' + idSuffix;
+    div.innerHTML = '<div class="str-meter-row">'
+      + '<span class="str-meter-lbl"><span id="strLbl' + idSuffix + '"></span></span>'
+      + '<span class="str-meter-val"><span id="strEmoji' + idSuffix + '"></span> <span id="strScore' + idSuffix + '">0%</span> <span id="strTier' + idSuffix + '"></span></span>'
+      + '</div>'
+      + '<div class="str-meter-bar"><div class="str-meter-fill" id="strFill' + idSuffix + '"></div></div>'
+      + '<div class="str-meter-tip" id="strTip' + idSuffix + '"></div>';
+    return div;
+  }
+
+  function updateMeter(idSuffix, text){
+    var meter = document.getElementById('strMeter' + idSuffix);
+    if (!meter) return;
+    var result = calculateStrength(text);
+    var tier = tierFor(result.score);
+    var lbl = document.getElementById('strLbl' + idSuffix);
+    var score = document.getElementById('strScore' + idSuffix);
+    var emoji = document.getElementById('strEmoji' + idSuffix);
+    var tierEl = document.getElementById('strTier' + idSuffix);
+    var fill = document.getElementById('strFill' + idSuffix);
+    var tip = document.getElementById('strTip' + idSuffix);
+    if (lbl) lbl.textContent = tr('label');
+    if (score) score.textContent = result.score + '%';
+    if (emoji) emoji.textContent = tier.emoji;
+    if (tierEl) tierEl.textContent = '· ' + tr(tier.key);
+    if (fill) {
+      fill.style.width = result.score + '%';
+      fill.className = 'str-meter-fill ' + tier.cls;
+    }
+    if (tip) {
+      if (result.tips.length > 0 && result.score < 90) {
+        tip.textContent = '💡 ' + tr(result.tips[0]);
+        tip.classList.add('show');
+      } else if (result.score >= 90) {
+        tip.textContent = tr('tipPerfect');
+        tip.classList.add('show');
+      } else {
+        tip.classList.remove('show');
+      }
+    }
+  }
+
+  // === Image Mode Integration ===
+  function injectImageMeter(){
+    if (document.getElementById('strMeterImg')) return true;
+    // Find action-row that contains #copyBtn (img mode), NOT #vidCopyBtn (vid mode)
+    var copyBtn = document.getElementById('copyBtn');
+    if (!copyBtn) return false;
+    var actionRow = copyBtn.closest('.action-row');
+    if (!actionRow) return false;
+    var meter = buildMeter('Img');
+    actionRow.parentNode.insertBefore(meter, actionRow);
+    var fp = document.getElementById('finalPrompt');
+    if (fp) {
+      var observer = new MutationObserver(function(){ updateMeter('Img', fp.textContent); });
+      observer.observe(fp, { characterData: true, childList: true, subtree: true });
+      updateMeter('Img', fp.textContent);
+    }
+    var ta = document.getElementById('userInput');
+    if (ta) {
+      ta.addEventListener('input', function(){
+        clearTimeout(window.__strImgT);
+        window.__strImgT = setTimeout(function(){ updateMeter('Img', (document.getElementById('finalPrompt')?.textContent) || ta.value); }, 200);
       });
-      obs.observe(document.body, { childList: true, subtree: false });
-      
-      FLAGS.langReload = true;
-      _log('Lang auto-reload installed');
     }
-    
-    function showAutoReloadToast(newLang) {
-      var T = newLang === 'he' ? 'עובר לעברית...' : 'Switching to English...';
-      var existing = document.getElementById('__pb62_lang_toast');
-      if (existing) existing.remove();
-      var toast = document.createElement('div');
-      toast.id = '__pb62_lang_toast';
-      toast.setAttribute('role', 'status');
-      toast.setAttribute('aria-live', 'polite');
-      toast.textContent = T;
-      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,122,255,0.95);color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;font-weight:500;z-index:100000;box-shadow:0 4px 20px rgba(0,0,0,0.4)';
-      document.body.appendChild(toast);
+    return true;
+  }
+
+  // === Video Mode Integration ===
+  function injectVideoMeter(){
+    if (document.getElementById('strMeterVid')) return true;
+    var vidActionRow = document.querySelector('.vid-action-row');
+    if (!vidActionRow) return false;
+    var meter = buildMeter('Vid');
+    // Insert above engine-bar if present, otherwise above action-row
+    var engineBar = document.getElementById('vidEngineBar');
+    var anchor = engineBar || vidActionRow;
+    anchor.parentNode.insertBefore(meter, anchor);
+    var vfp = document.getElementById('vidFinalPrompt');
+    if (vfp) {
+      var observer = new MutationObserver(function(){
+        var t = vfp.textContent;
+        // Skip placeholders
+        if (/^✨|^מתרגם|^Translating|^תארו/.test(t || '')) return;
+        updateMeter('Vid', t);
+      });
+      observer.observe(vfp, { characterData: true, childList: true, subtree: true });
+      updateMeter('Vid', vfp.textContent);
     }
-    
-    function boot() {
-      installPayBoxDesktopFix();
-      installLangAutoReload();
-      _log('v6.2 hot patch installed (PayBox desktop + Lang auto-reload)');
+    return true;
+  }
+
+  function tryInject(){
+    var imgOk = injectImageMeter();
+    var vidOk = injectVideoMeter();
+    if (!imgOk || !vidOk) setTimeout(tryInject, 400);
+  }
+
+  // === Lang change observer ===
+  function observeLang(){
+    new MutationObserver(function(){
+      var fp = document.getElementById('finalPrompt');
+      var vfp = document.getElementById('vidFinalPrompt');
+      if (fp) updateMeter('Img', fp.textContent);
+      if (vfp) updateMeter('Vid', vfp.textContent);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
+
+  function boot(){
+    tryInject();
+    observeLang();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  window.calculateStrength = calculateStrength;
+  window.tierFor = tierFor;
+})();
+</script>
+
+<!-- S5: Smart Suggestions (2026-05-06) -->
+<style>
+.smart-sug{display:flex;flex-wrap:wrap;gap:6px;padding:6px 0 4px;align-items:center;min-height:32px}
+.smart-sug-lbl{font-size:11px;color:var(--muted);font-weight:500;flex-shrink:0;margin-inline-end:2px}
+.smart-sug-chip{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:11px;font-weight:500;padding:5px 10px;border-radius:99px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:30px;white-space:nowrap}
+.smart-sug-chip:hover{border-color:var(--a4);background:var(--a1);transform:translateY(-1px)}
+.smart-sug-chip:active{opacity:.85;transform:scale(.96)}
+.smart-sug-chip.added{background:var(--a2);border-color:var(--accent);color:#a8c8ff;opacity:.55;cursor:default}
+.smart-sug-chip-emoji{font-size:13px;line-height:1}
+.smart-sug-empty{font-size:10px;color:var(--muted);font-style:italic;opacity:.6}
+[data-theme="light"] .smart-sug-chip{background:var(--surface2);color:var(--text)}
+[data-theme="light"] .smart-sug-chip.added{background:rgba(0,122,255,.12);color:var(--accent)}
+</style>
+<script>
+(function(){
+  if (window.__smartSuggestionsInstalled) return;
+  window.__smartSuggestionsInstalled = true;
+
+  // === Suggestion Map (keyword regex → [boosters]) ===
+  // Each keyword can be HE/EN, suggestions are always English (universal AI prompts)
+  var SMART_MAP = {
+    // Subjects
+    'cat|חתול|חתלתול': [{t:'photorealistic',e:'📸'},{t:'soft fur detail',e:'✨'},{t:'shallow depth of field',e:'🔍'}],
+    'dog|כלב|גור|גורי': [{t:'photorealistic',e:'📸'},{t:'soft fur detail',e:'✨'},{t:'natural light',e:'☀️'}],
+    'bird|ציפור|נשר': [{t:'aerial shot',e:'🚁'},{t:'sharp focus',e:'🎯'}],
+    'horse|סוס': [{t:'wide cinematic shot',e:'🎬'},{t:'golden hour',e:'🌅'}],
+    'fish|דג|מים': [{t:'underwater photography',e:'🌊'},{t:'volumetric light rays',e:'💡'}],
+    'dragon|דרקון': [{t:'epic fantasy art',e:'🐉'},{t:'dramatic lighting',e:'⚡'},{t:'highly detailed',e:'🌌'}],
+    'unicorn|חד-קרן|חדקרן': [{t:'magical glow',e:'✨'},{t:'pastel colors',e:'🌈'}],
+
+    // People
+    'portrait|דיוקן|פנים': [{t:'85mm lens',e:'📷'},{t:'shallow depth of field',e:'🔍'},{t:'rim lighting',e:'💡'}],
+    'woman|אישה|בחורה': [{t:'professional portrait',e:'📷'},{t:'soft natural light',e:'☀️'}],
+    'man|גבר|בחור': [{t:'professional portrait',e:'📷'},{t:'dramatic lighting',e:'⚡'}],
+    'child|ילד|ילדה|תינוק|טף': [{t:'soft natural light',e:'☀️'},{t:'warm tones',e:'🔥'},{t:'candid moment',e:'✨'}],
+
+    // Environments
+    'forest|יער|עצים': [{t:'morning mist',e:'🌫️'},{t:'volumetric lighting',e:'💡'},{t:'cinematic shot',e:'🎬'}],
+    'beach|חוף|ים': [{t:'aerial drone shot',e:'🚁'},{t:'natural light',e:'☀️'},{t:'4k detailed',e:'📷'}],
+    'ocean|אוקיינוס': [{t:'wide aerial shot',e:'🚁'},{t:'volumetric light rays',e:'💡'}],
+    'mountain|הר|הרים': [{t:'epic landscape',e:'⛰️'},{t:'golden hour',e:'🌅'},{t:'wide angle',e:'🎬'}],
+    'city|עיר|תל אביב': [{t:'cyberpunk style',e:'🌃'},{t:'neon lights',e:'💡'},{t:'rain-slicked streets',e:'🌧️'}],
+    'kitchen|מטבח': [{t:'macro photography',e:'🔍'},{t:'soft warm light',e:'🔥'}],
+    'desert|מדבר': [{t:'dramatic shadows',e:'⚡'},{t:'warm tones',e:'🔥'},{t:'wide cinematic',e:'🎬'}],
+    'space|חלל|כוכב': [{t:'highly detailed',e:'✨'},{t:'cosmic lighting',e:'🌌'},{t:'sci-fi style',e:'🚀'}],
+
+    // Time / Lighting
+    'sunset|שקיעה|זריחה': [{t:'golden hour lighting',e:'🌅'},{t:'warm tones',e:'🔥'},{t:'dramatic sky',e:'⚡'}],
+    'night|לילה': [{t:'moonlight',e:'🌙'},{t:'noir style',e:'🌑'},{t:'low light',e:'💫'}],
+    'rain|גשם|מטר': [{t:'cinematic atmosphere',e:'🎬'},{t:'reflective surfaces',e:'💫'}],
+    'snow|שלג': [{t:'soft natural light',e:'☀️'},{t:'pastel cool tones',e:'❄️'}],
+
+    // Style
+    'anime|אנימה|מנגה': [{t:'studio ghibli style',e:'🎨'},{t:'cel shading',e:'✨'}],
+    'vintage|וינטג|רטרו': [{t:'film grain',e:'🎥'},{t:'analog photography',e:'📷'},{t:'kodak portra',e:'✨'}],
+    'fantasy|פנטזיה': [{t:'epic fantasy art',e:'⚔️'},{t:'dramatic lighting',e:'⚡'},{t:'magical atmosphere',e:'✨'}],
+    'cute|חמוד|חמודה': [{t:'pixar animation style',e:'🎨'},{t:'pastel colors',e:'🌈'},{t:'kawaii style',e:'😊'}],
+    'realistic|מציאותי|ריאליסטי': [{t:'photorealistic',e:'📸'},{t:'8k sharp',e:'🎯'},{t:'professional',e:'✨'}],
+
+    // Food
+    'food|אוכל|מאכל': [{t:'macro photography',e:'🔍'},{t:'soft natural light',e:'☀️'},{t:'food styling',e:'🍴'}],
+    'coffee|קפה': [{t:'macro shot',e:'🔍'},{t:'warm light',e:'🔥'},{t:'shallow depth',e:'✨'}],
+
+    // Action / Motion (vid mode emphasis)
+    'running|רץ|רצה|רקד': [{t:'slow motion',e:'⏱️'},{t:'tracking shot',e:'🎬'}],
+    'flying|מעוף|עף': [{t:'aerial shot',e:'🚁'},{t:'cinematic camera',e:'🎬'}],
+    'walking|הולך|הולכת': [{t:'cinematic slow movement',e:'🎬'},{t:'wide shot',e:'📷'}]
+  };
+
+  var T = {
+    label: { he: '💡 הצעות חכמות:', en: '💡 Smart suggestions:' },
+    empty: { he: 'תתחיל/י לתאר משהו — ונציע משפרי איכות', en: 'Start describing — we\'ll suggest enhancers' }
+  };
+  function getLang(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
+  function tr(k){ var l = getLang(); return T[k] && T[k][l] || (T[k] && T[k].he) || k; }
+
+  function getSuggestions(text){
+    if (!text || text.length < 3) return [];
+    var matched = [];
+    var seen = new Set();
+    var lower = text.toLowerCase();
+    Object.keys(SMART_MAP).forEach(function(kw){
+      var keywords = kw.toLowerCase().split('|');
+      var found = keywords.some(function(w){
+        var idx = lower.indexOf(w);
+        if (idx === -1) return false;
+        // Custom word-boundary check that supports Hebrew (\b doesn't work with non-Latin)
+        // Hebrew words can have prefix letters (ב/ה/ו/מ/ל/כ/ש), so skip 'before' boundary check for Hebrew keywords
+        var isHebrewWord = /[\u0590-\u05FF]/.test(w);
+        var before = idx === 0 ? '' : lower.charAt(idx - 1);
+        var after = idx + w.length >= lower.length ? '' : lower.charAt(idx + w.length);
+        var isBoundary = function(c){ return !c || /[^\u0590-\u05FFa-zA-Z0-9]/.test(c); };
+        var beforeOK = isHebrewWord ? true : isBoundary(before);
+        return beforeOK && isBoundary(after);
+      });
+      if (found) {
+        SMART_MAP[kw].forEach(function(s){
+          if (!seen.has(s.t)) {
+            seen.add(s.t);
+            matched.push(s);
+          }
+        });
+      }
+    });
+    return matched.slice(0, 5);
+  }
+
+  function buildSugRow(idSuffix){
+    var row = document.createElement('div');
+    row.className = 'smart-sug';
+    row.id = 'sugRow' + idSuffix;
+    row.innerHTML = '<span class="smart-sug-lbl" id="sugLbl' + idSuffix + '"></span><span class="smart-sug-empty" id="sugEmpty' + idSuffix + '"></span>';
+    return row;
+  }
+
+  function isAdded(text, suggestion){
+    return text.toLowerCase().indexOf(suggestion.toLowerCase()) !== -1;
+  }
+
+  function renderSuggestions(idSuffix, sourceText, targetTaId){
+    var row = document.getElementById('sugRow' + idSuffix);
+    if (!row) return;
+    var lbl = document.getElementById('sugLbl' + idSuffix);
+    var empty = document.getElementById('sugEmpty' + idSuffix);
+    if (lbl) lbl.textContent = tr('label');
+    var sugs = getSuggestions(sourceText);
+    // Remove old chips (keep label + empty)
+    Array.from(row.querySelectorAll('.smart-sug-chip')).forEach(function(c){ c.remove(); });
+    if (sugs.length === 0) {
+      if (empty) { empty.textContent = tr('empty'); empty.style.display = 'inline'; }
+      return;
     }
-    
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot);
-    } else {
-      boot();
+    if (empty) empty.style.display = 'none';
+    var ta = document.getElementById(targetTaId);
+    var taText = ta ? ta.value : '';
+    sugs.forEach(function(s){
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'smart-sug-chip' + (isAdded(taText, s.t) ? ' added' : '');
+      chip.innerHTML = '<span class="smart-sug-chip-emoji">' + s.e + '</span><span>+ ' + s.t + '</span>';
+      chip.addEventListener('click', function(){
+        if (chip.classList.contains('added')) return;
+        if (!ta) return;
+        var cur = ta.value || '';
+        var addition = (cur.replace(/\s+$/, '').endsWith(',') || !cur.trim()) ? ' ' + s.t : ', ' + s.t;
+        ta.value = cur + addition;
+        try { ta.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+        chip.classList.add('added');
+      });
+      row.appendChild(chip);
+    });
+  }
+
+  // === Image Mode Integration ===
+  function injectImgSug(){
+    if (document.getElementById('sugRowImg')) return true;
+    var ta = document.getElementById('userInput');
+    var taWrap = ta ? ta.closest('.textarea-wrap') : null;
+    if (!ta || !taWrap) return false;
+    var row = buildSugRow('Img');
+    taWrap.parentNode.insertBefore(row, taWrap.nextSibling);
+    var update = function(){
+      clearTimeout(window.__sugImgT);
+      window.__sugImgT = setTimeout(function(){
+        renderSuggestions('Img', ta.value, 'userInput');
+      }, 300);
+    };
+    ta.addEventListener('input', update);
+    update();
+    return true;
+  }
+
+  // === Video Mode Integration ===
+  function injectVidSug(){
+    if (document.getElementById('sugRowVid')) return true;
+    var ta = document.getElementById('vidInput');
+    if (!ta) return false;
+    var row = buildSugRow('Vid');
+    ta.parentNode.insertBefore(row, ta.nextSibling);
+    var update = function(){
+      clearTimeout(window.__sugVidT);
+      window.__sugVidT = setTimeout(function(){
+        renderSuggestions('Vid', ta.value, 'vidInput');
+      }, 300);
+    };
+    ta.addEventListener('input', update);
+    update();
+    return true;
+  }
+
+  function tryInject(){
+    var imgOk = injectImgSug();
+    var vidOk = injectVidSug();
+    if (!imgOk || !vidOk) setTimeout(tryInject, 400);
+  }
+
+  // Lang change observer
+  function observeLang(){
+    new MutationObserver(function(){
+      var imgTa = document.getElementById('userInput');
+      var vidTa = document.getElementById('vidInput');
+      if (imgTa) renderSuggestions('Img', imgTa.value, 'userInput');
+      if (vidTa) renderSuggestions('Vid', vidTa.value, 'vidInput');
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
+
+  function boot(){
+    tryInject();
+    observeLang();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  window.getSuggestions = getSuggestions;
+})();
+</script>
+
+<!-- S7: Active History + Re-mix (2026-05-06) -->
+<style>
+.hist-item{position:relative;padding-inline-end:60px!important}
+.hist-remix{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:1px solid var(--border);color:var(--muted);font-size:14px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;touch-action:manipulation;opacity:0;font-family:inherit}
+[dir="rtl"] .hist-remix{left:8px;right:auto}
+[dir="ltr"] .hist-remix{right:8px;left:auto}
+.hist-item:hover .hist-remix,.hist-item:focus-within .hist-remix{opacity:1}
+@media (hover: none){.hist-remix{opacity:.55}}
+.hist-remix:hover{background:var(--a2);border-color:var(--accent);color:var(--accent);transform:translateY(-50%) scale(1.1)}
+.hist-remix:active{transform:translateY(-50%) scale(.92)}
+.hist-mode-badge{display:inline-block;font-size:9px;font-weight:600;padding:1px 6px;border-radius:99px;margin-inline-end:4px;text-transform:uppercase;letter-spacing:.3px;vertical-align:middle}
+.hist-mode-badge.img{background:rgba(0,122,255,.15);color:#5ba0ff}
+.hist-mode-badge.vid{background:rgba(0,229,150,.15);color:#00e596}
+[data-theme="light"] .hist-mode-badge.img{background:rgba(0,122,255,.1);color:#0057c7}
+[data-theme="light"] .hist-mode-badge.vid{background:rgba(0,170,100,.1);color:#008855}
+[data-theme="light"] .hist-remix{color:var(--muted);border-color:var(--border)}
+</style>
+<script>
+(function(){
+  if (window.__historyRemixInstalled) return;
+  window.__historyRemixInstalled = true;
+
+  var SCHEMA_VERSION = 2;
+
+  // === Schema Migration ===
+  function migrateHistory(key, mode, defaultEngine){
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return { migrated: 0, total: 0 };
+      var arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return { migrated: 0, total: 0 };
+      var migCount = 0;
+      var newArr = arr.map(function(item){
+        if (typeof item === 'string') {
+          // Very old: just a string
+          migCount++;
+          return { schema: SCHEMA_VERSION, mode: mode, prompt: item, ts: Date.now(), engine: defaultEngine };
+        }
+        if (item && item.schema === SCHEMA_VERSION) return item;
+        // v1 → v2
+        migCount++;
+        return {
+          schema: SCHEMA_VERSION,
+          mode: mode,
+          prompt: item.prompt || item.p || '',
+          text: item.text || '',
+          tags: item.tags || [],
+          ar: item.ar || null,
+          engine: item.engine || defaultEngine,
+          ts: item.ts || Date.now()
+        };
+      });
+      // Filter empty prompts
+      newArr = newArr.filter(function(item){ return item.prompt && item.prompt.length > 0; });
+      localStorage.setItem(key, JSON.stringify(newArr));
+      return { migrated: migCount, total: newArr.length };
+    } catch(e) {
+      console.warn('[history-migration]', key, e.message);
+      return { error: e.message };
     }
-  })();
+  }
+
+  // === Re-mix — load prompt to textarea + open variants modal ===
+  function remixPrompt(text, mode){
+    if (!text) return;
+    if (mode === 'vid') {
+      // Switch to vid mode if needed
+      if (typeof window.setMode === 'function' && document.body.className.indexOf('vid-mode') === -1) {
+        window.setMode('vid');
+      }
+      var vidTa = document.getElementById('vidInput');
+      if (vidTa) {
+        vidTa.value = text;
+        try { vidTa.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+        try { vidTa.focus(); } catch(e) {}
+      }
+      // Close history panel if open
+      var hp = document.getElementById('histPanel');
+      if (hp) hp.classList.remove('open');
+      return;
+    }
+    // img mode
+    if (typeof window.setMode === 'function' && document.body.className.indexOf('vid-mode') !== -1) {
+      window.setMode('img');
+    }
+    var ta = document.getElementById('userInput');
+    if (ta) {
+      ta.value = text;
+      try { ta.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+    }
+    // Close history panel
+    var histPanel = document.getElementById('histPanel');
+    if (histPanel) histPanel.classList.remove('open');
+    // Open variants modal
+    setTimeout(function(){
+      if (typeof window.openVariantsModal === 'function') window.openVariantsModal();
+    }, 100);
+  }
+
+  // === Add Re-mix button to existing history items ===
+  function enhanceHistItem(item){
+    if (!item || item.querySelector('.hist-remix')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hist-remix';
+    btn.innerHTML = '🎲';
+    btn.setAttribute('aria-label', 'Re-mix');
+    btn.title = (document.documentElement.getAttribute('lang') === 'en' ? 'Re-mix this prompt' : 'ערבב את הפרומפט מחדש');
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      // Get prompt from item
+      var textEl = item.querySelector('.hist-text');
+      var text = textEl ? textEl.textContent.trim() : '';
+      // BUG-PAE-009 fix: app has only single histPanel/historyList shared by both modes.
+      // Detect mode via body class (vid-mode) since #vidHistPanel doesn't exist.
+      var isVidMode = document.body.className.indexOf('vid-mode') !== -1;
+      remixPrompt(text, isVidMode ? 'vid' : 'img');
+    });
+    item.appendChild(btn);
+  }
+
+  function addModeBadgeIfNeeded(item, mode){
+    var textEl = item.querySelector('.hist-text');
+    if (!textEl || textEl.querySelector('.hist-mode-badge')) return;
+    var badge = document.createElement('span');
+    badge.className = 'hist-mode-badge ' + mode;
+    badge.textContent = mode === 'vid' ? '🎬 VID' : '🖼️ IMG';
+    textEl.insertBefore(badge, textEl.firstChild);
+  }
+
+  function enhanceAllItems(){
+    var imgList = document.getElementById('historyList');
+    if (imgList) {
+      Array.from(imgList.querySelectorAll('.hist-item')).forEach(function(it){
+        enhanceHistItem(it);
+      });
+    }
+    // BUG-PAE-009: vid history doesn't have a separate panel, app uses single #historyList.
+    // The above loop already covers all items.
+  }
+
+  // Watch for history list changes
+  function observeHistory(){
+    var imgList = document.getElementById('historyList');
+    if (imgList) {
+      new MutationObserver(function(){ enhanceAllItems(); }).observe(imgList, { childList: true, subtree: true });
+    }
+  }
+
+  function boot(){
+    // Run migrations
+    var imgMig = migrateHistory('sbp_hist', 'img', 'midjourney');
+    var vidMig = migrateHistory('paeVidHistory', 'vid', 'kling');
+    if (imgMig.migrated > 0 || vidMig.migrated > 0) {
+      console.log('[history-migration] img:', imgMig, 'vid:', vidMig);
+    }
+    // Enhance UI
+    enhanceAllItems();
+    observeHistory();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+  // Re-run on tick to catch dynamically rendered items
+  setTimeout(enhanceAllItems, 800);
+  setTimeout(enhanceAllItems, 2000);
+
+  window.remixPrompt = remixPrompt;
+  window.migrateHistory = migrateHistory;
+})();
+</script>
+
+<!-- S11: Variants Generator (Video) (2026-05-06) -->
+<script>
+(function(){
+  if (window.__vidVariantsInstalled) return;
+  window.__vidVariantsInstalled = true;
+
+  var VID_VARIANT_TEMPLATES = {
+    cinematic: {
+      emoji: '🎬', nameHe: 'קולנועי', nameEn: 'Cinematic',
+      suffix: ', cinematic shot, dramatic lighting, slow motion tracking, anamorphic lens, film grain'
+    },
+    artistic: {
+      emoji: '🎨', nameHe: 'אמנותי', nameEn: 'Artistic',
+      suffix: ', dreamy aesthetic, soft pastel colors, surreal atmosphere, flowing motion, ethereal lighting'
+    },
+    documentary: {
+      emoji: '📸', nameHe: 'דוקומנטרי', nameEn: 'Documentary',
+      suffix: ', handheld camera, natural lighting, candid moment, real-time motion, authentic feel'
+    }
+  };
+
+  var RANDOM_VID_SUBJECTS = [
+    'Polar bears walking on a glacier',
+    'A dragon flying over snowy mountains',
+    'Cherry blossoms falling slowly',
+    'A wave crashing on rocks',
+    'A cat playing with yarn',
+    'A train moving through a forest',
+    'Hot air balloons rising at sunrise',
+    'A waterfall cascading down cliffs',
+    'Northern lights dancing in the sky',
+    'A horse galloping on a beach'
+  ];
+
+  var T = {
+    titleEmpty: { he: 'בחר/י נושא לווידאו', en: 'Pick a video idea' },
+    titleFilled: { he: '3 גרסאות לווידאו שלך', en: '3 video variants of yours' },
+    subEmpty: { he: 'לחץ להחלפת הטקסט בתיבת הקלט', en: 'Click to replace text in input' },
+    subFilled: { he: 'לחץ להחלפת הטקסט בתיבת הקלט', en: 'Click to replace text in input' },
+    randomCard: { he: '🎲 אקראי לגמרי', en: '🎲 Totally random' },
+    cancel: { he: 'ביטול', en: 'Cancel' }
+  };
+  function getLang(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
+  function tr(k){ var l = getLang(); return T[k] && T[k][l] || (T[k] && T[k].he) || k; }
+
+  function buildVidModal(){
+    if (document.getElementById('vidVarOverlay')) return;
+    var html = '<div id="vidVarOverlay" class="var-overlay" role="dialog" aria-modal="true">'
+      + '<div class="var-box">'
+      + '<div class="var-title" id="vidVarTitle"></div>'
+      + '<div class="var-subtitle" id="vidVarSubtitle"></div>'
+      + '<div class="var-cards" id="vidVarCards"></div>'
+      + '<button type="button" class="var-cancel" id="vidVarCancelBtn"></button>'
+      + '</div></div>';
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    document.body.appendChild(div.firstChild);
+    var ov = document.getElementById('vidVarOverlay');
+    ov.addEventListener('click', function(e){ if (e.target === ov) closeVidVariantsModal(); });
+    document.getElementById('vidVarCancelBtn').addEventListener('click', closeVidVariantsModal);
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && ov.classList.contains('show')) closeVidVariantsModal();
+    });
+  }
+
+  function renderVidCards(isEmpty, txt){
+    var cards = document.getElementById('vidVarCards');
+    cards.innerHTML = '';
+    var lang = getLang();
+    Object.keys(VID_VARIANT_TEMPLATES).forEach(function(key){
+      var t = VID_VARIANT_TEMPLATES[key];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'var-card';
+      var fullText;
+      if (isEmpty) {
+        var subject = RANDOM_VID_SUBJECTS[Math.floor(Math.random() * RANDOM_VID_SUBJECTS.length)];
+        fullText = subject + t.suffix;
+      } else {
+        fullText = txt + t.suffix;
+      }
+      btn.innerHTML = '<div class="var-card-head"><span class="var-card-emoji">' + t.emoji + '</span><span>' + (lang === 'en' ? t.nameEn : t.nameHe) + '</span></div>'
+        + '<div class="var-card-preview">' + escapeHtml(fullText.length > 80 ? fullText.substring(0, 77) + '...' : fullText) + '</div>';
+      btn.addEventListener('click', function(){ applyVidVariant(fullText); });
+      cards.appendChild(btn);
+    });
+    // Random card
+    var randBtn = document.createElement('button');
+    randBtn.type = 'button';
+    randBtn.className = 'var-card var-card-random';
+    randBtn.innerHTML = '<div class="var-card-head"><span>' + tr('randomCard') + '</span></div>';
+    randBtn.addEventListener('click', applyRandomVidCard);
+    cards.appendChild(randBtn);
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function openVidVariantsModal(){
+    buildVidModal();
+    var ta = document.getElementById('vidInput');
+    var txt = (ta && ta.value || '').trim();
+    var isEmpty = !txt;
+    document.getElementById('vidVarTitle').textContent = isEmpty ? tr('titleEmpty') : tr('titleFilled');
+    document.getElementById('vidVarSubtitle').textContent = isEmpty ? tr('subEmpty') : tr('subFilled');
+    document.getElementById('vidVarCancelBtn').textContent = tr('cancel');
+    renderVidCards(isEmpty, txt);
+    var ov = document.getElementById('vidVarOverlay');
+    ov.classList.add('show');
+    setTimeout(function(){ var first = ov.querySelector('.var-card'); if (first) first.focus(); }, 50);
+  }
+
+  function closeVidVariantsModal(){
+    var ov = document.getElementById('vidVarOverlay');
+    if (ov) ov.classList.remove('show');
+  }
+
+  function applyVidVariant(fullText){
+    var ta = document.getElementById('vidInput');
+    if (ta){
+      ta.value = fullText;
+      try { ta.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+      try { ta.focus(); } catch(e) {}
+    }
+    closeVidVariantsModal();
+  }
+
+  function applyRandomVidCard(){
+    closeVidVariantsModal();
+    var ta = document.getElementById('vidInput');
+    if (ta) {
+      var subject = RANDOM_VID_SUBJECTS[Math.floor(Math.random() * RANDOM_VID_SUBJECTS.length)];
+      ta.value = subject;
+      try { ta.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+    }
+  }
+
+  // Replace vid random button to open variants modal instead
+  function tryHookVidRandom(){
+    var btn = document.getElementById('vidRndBtn');
+    if (!btn) {
+      setTimeout(tryHookVidRandom, 500);
+      return;
+    }
+    if (btn.dataset.vidVarHooked) return;
+    btn.dataset.vidVarHooked = '1';
+    // Override onclick (also captures click before original handler if any)
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openVidVariantsModal();
+      return false;
+    }, true); // capture phase to intercept first
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryHookVidRandom);
+  } else {
+    tryHookVidRandom();
+  }
+
+  window.openVidVariantsModal = openVidVariantsModal;
+  window.closeVidVariantsModal = closeVidVariantsModal;
+})();
+</script>
+
+<!-- S12: Multi-Shot Mode (pragmatic v1, 2026-05-06) -->
+<style>
+.ms-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:11px;margin-bottom:6px}
+.ms-bar-lbl{color:var(--muted);font-weight:500}
+.ms-bar-btn{background:transparent;border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:99px;cursor:pointer;font-size:10px;font-weight:600;font-family:inherit;touch-action:manipulation;display:flex;align-items:center;gap:4px;min-height:28px}
+.ms-bar-btn:hover{border-color:var(--a4);background:var(--a1)}
+.ms-bar-btn:active{opacity:.85}
+.ms-bar-btn.on{background:var(--a3);border-color:var(--accent);color:#fff}
+[data-theme="light"] .ms-bar-btn.on{color:#fff}
+</style>
+<script>
+(function(){
+  if (window.__multiShotInstalled) return;
+  window.__multiShotInstalled = true;
+
+  var T = {
+    label:    { he: '🎬 Multi-Shot:', en: '🎬 Multi-Shot:' },
+    off:      { he: 'כבוי (1 shot)', en: 'Off (1 shot)' },
+    on:       { he: 'מופעל (3 shots)', en: 'On (3 shots)' },
+    toolTip:  { he: 'ממיר פרומפט יחיד לרצף 3 shots: opening / climax / closing', en: 'Convert single prompt to 3-shot sequence: opening / climax / closing' }
+  };
+  function getLang(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
+  function tr(k){ var l = getLang(); return T[k] && T[k][l] || (T[k] && T[k].he) || k; }
+
+  // === Multi-shot transformer ===
+  function toMultiShot(prompt){
+    if (!prompt || !prompt.trim()) return prompt;
+    // Strip --dur and brackets for clean shot text
+    var durMatch = prompt.match(/--dur\s+(\d+)/);
+    var dur = durMatch ? durMatch[1] : '5';
+    var perShot = Math.max(1, Math.round(dur / 3));
+    var clean = prompt.replace(/--dur\s+\S+/g, '').replace(/,\s*$/, '').trim();
+    // Build 3-shot sequence
+    return 'Shot 1 (opening, ' + perShot + 's): wide establishing shot, ' + clean + '\n'
+         + 'Shot 2 (climax, ' + perShot + 's): close-up tracking, ' + clean + ', dramatic action\n'
+         + 'Shot 3 (closing, ' + perShot + 's): pullback wide shot, ' + clean + ', resolution moment';
+  }
+
+  function getMode(){
+    try { return localStorage.getItem('paeMultiShot') === '1'; } catch(e) { return false; }
+  }
+  function setMode(on){
+    try { localStorage.setItem('paeMultiShot', on ? '1' : '0'); } catch(e) {}
+    updateBtn();
+  }
+
+  // === UI ===
+  function buildBar(){
+    if (document.getElementById('msBar')) return true;
+    var vidActionRow = document.querySelector('.vid-action-row');
+    if (!vidActionRow) return false;
+    // Insert above vid engine bar (or above vid-action-row)
+    var anchor = document.getElementById('vidEngineBar') || vidActionRow;
+    var bar = document.createElement('div');
+    bar.className = 'ms-bar';
+    bar.id = 'msBar';
+    bar.innerHTML = '<span class="ms-bar-lbl" id="msBarLbl"></span>'
+      + '<button type="button" class="ms-bar-btn" id="msBarBtn" title="' + tr('toolTip') + '"></button>';
+    anchor.parentNode.insertBefore(bar, anchor);
+    document.getElementById('msBarBtn').addEventListener('click', function(){
+      setMode(!getMode());
+      // Re-trigger render
+      var ta = document.getElementById('vidInput');
+      if (ta) try { ta.dispatchEvent(new Event('input', { bubbles: true })); } catch(e) {}
+    });
+    updateBtn();
+    return true;
+  }
+
+  function updateBtn(){
+    var lbl = document.getElementById('msBarLbl');
+    var btn = document.getElementById('msBarBtn');
+    if (lbl) lbl.textContent = tr('label');
+    if (btn) {
+      var on = getMode();
+      btn.textContent = on ? tr('on') : tr('off');
+      btn.classList.toggle('on', on);
+    }
+  }
+
+  function tryBuildBar(){
+    if (buildBar()) return;
+    setTimeout(tryBuildBar, 400);
+  }
+
+  // === Wrap copyVideoPrompt to transform if multi-shot is on ===
+  function installMSWrapper(){
+    var orig = window.copyVideoPrompt;
+    if (!orig || orig.__multiShotWrapped) return false;
+    var wrapped = async function(){
+      if (!getMode()) return orig.apply(this, arguments);
+      // Multi-shot mode: transform vidFinalPrompt textContent
+      var fp = document.getElementById('vidFinalPrompt');
+      if (!fp) return orig.apply(this, arguments);
+      var orig_text = (fp.textContent || '').trim();
+      if (!orig_text || orig_text.length < 5) return orig.apply(this, arguments);
+      var transformed = toMultiShot(orig_text);
+      // Temporarily replace then restore
+      fp.textContent = transformed;
+      try {
+        return await orig.apply(this, arguments);
+      } finally {
+        setTimeout(function(){ fp.textContent = orig_text; }, 80);
+      }
+    };
+    wrapped.__multiShotWrapped = true;
+    window.copyVideoPrompt = wrapped;
+    return true;
+  }
+  function tryInstallMSWrapper(){
+    if (installMSWrapper()) return;
+    setTimeout(tryInstallMSWrapper, 400);
+  }
+
+  // Lang observer
+  function observeLang(){
+    new MutationObserver(updateBtn).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
+
+  function boot(){
+    tryBuildBar();
+    tryInstallMSWrapper();
+    observeLang();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  window.toMultiShot = toMultiShot;
+  window.getMultiShotMode = getMode;
+  window.setMultiShotMode = setMode;
+})();
+</script>
+
+<!-- S13: What's New Guide Banner (2026-05-06) -->
+<style>
+.wn-banner{display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(135deg,rgba(0,122,255,.12),rgba(0,229,204,.06));border:1px solid var(--a3);border-radius:var(--r-sm);margin-bottom:8px;cursor:pointer;font-size:11.5px;color:var(--text);transition:all .2s;animation:wnSlide .35s ease}
+@keyframes wnSlide { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+.wn-banner:hover{border-color:var(--a4);background:linear-gradient(135deg,rgba(0,122,255,.18),rgba(0,229,204,.1))}
+.wn-banner:active{opacity:.85}
+.wn-banner.dismissed{display:none}
+.wn-emoji{font-size:16px;flex-shrink:0}
+.wn-title{font-weight:600;color:#5ba0ff;flex-shrink:0}
+.wn-text{flex:1;color:var(--muted);font-size:10.5px;line-height:1.4}
+.wn-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:0 4px;opacity:.6;flex-shrink:0;font-family:inherit}
+.wn-close:hover{opacity:1}
+[data-theme="light"] .wn-banner{background:linear-gradient(135deg,rgba(0,122,255,.06),rgba(0,229,204,.03))}
+[data-theme="light"] .wn-title{color:#0057c7}
+.wn-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+.wn-modal-overlay.show{display:flex;animation:wnFade .2s ease}
+@keyframes wnFade { from { opacity:0 } to { opacity:1 } }
+.wn-modal-box{background:var(--surface);border:1px solid var(--a2);border-radius:12px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;padding:18px 20px;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.wn-modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.wn-modal-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.wn-feat{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px;line-height:1.5}
+.wn-feat:last-child{border-bottom:none}
+.wn-feat-emoji{font-size:18px;flex-shrink:0}
+.wn-feat-content{flex:1}
+.wn-feat-name{font-weight:600;color:var(--text);margin-bottom:2px}
+.wn-feat-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.wn-modal-close{display:block;width:100%;background:var(--a2);border:1px solid var(--a3);color:var(--accent);padding:9px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;margin-top:14px;touch-action:manipulation;min-height:40px}
+.wn-modal-close:hover{background:var(--a3);color:#fff}
+[data-theme="light"] .wn-modal-box{background:var(--surface)}
+</style>
+<script>
+(function(){
+  if (window.__whatsNewInstalled) return;
+  window.__whatsNewInstalled = true;
+
+  var T = {
+    bannerTitle: { he: 'מה חדש v6.2', en: "What's new v6.2" },
+    bannerText:  { he: '6 שדרוגים חדשים — לחץ לפרטים', en: '6 new features — click for details' },
+    modalTitle:  { he: '🎉 חדש ב-Palette AI', en: "🎉 New in Palette AI" },
+    modalSub:    { he: 'עדכון 6 ב-2026-05', en: 'Update 6 — 2026-05' },
+    feat1Name:   { he: '🎁 Variants Generator', en: '🎁 Variants Generator' },
+    feat1Desc:   { he: 'לחיצה על הפתעה תפתח מודל עם 3 גרסאות סגנוניות (📸 ריאליסטי / 🎨 אמנותי / 🎬 קולנועי) + קלף אקראי.', en: 'Click on Surprise opens a modal with 3 stylistic variants (📸 Realistic / 🎨 Artistic / 🎬 Cinematic) + random card.' },
+    feat2Name:   { he: '📁 Engine Adapter (Smart Copy)', en: '📁 Engine Adapter (Smart Copy)' },
+    feat2Desc:   { he: 'הפרומפט מותאם אוטומטית ל-engine שבחרת: 5 לתמונה (Midjourney / Nano Banana / DALL-E / ChatGPT / SD), 6 לווידאו (Kling / Pika / Runway / Veo / Luma / Hailuo).', en: 'Prompt auto-adapts to picked engine: 5 for image (Midjourney/Nano Banana/DALL-E/ChatGPT/SD), 6 for video (Kling/Pika/Runway/Veo/Luma/Hailuo).' },
+    feat3Name:   { he: '📊 Strength Meter', en: '📊 Strength Meter' },
+    feat3Desc:   { he: 'מד עוצמה (0-100%) מתעדכן בזמן אמת — מנתח subject / style / lighting / camera / quality ומציע שיפורים.', en: 'Real-time meter (0-100%) — analyzes subject/style/lighting/camera/quality and suggests improvements.' },
+    feat4Name:   { he: '💡 Smart Suggestions', en: '💡 Smart Suggestions' },
+    feat4Desc:   { he: 'Chips חכמים לפי מה שכתבת (חתול → photorealistic). תומך עברית + אנגלית.', en: 'Smart chips per keyword (cat → photorealistic, sunset → golden hour). HE+EN supported.' },
+    feat5Name:   { he: '🎲 History Re-mix', en: '🎲 History Re-mix' },
+    feat5Desc:   { he: 'כפתור על כל פרומפט בהיסטוריה — להליד גרסאות חדשות ממנו.', en: 'Button on every history item — generate fresh variants from it.' },
+    feat6Name:   { he: '🎬 Multi-Shot Mode', en: '🎬 Multi-Shot Mode' },
+    feat6Desc:   { he: 'בוידאו: המרת פרומפט יחיד לרצף 3 shots מובנה (opening / climax / closing).', en: 'Video: convert single prompt to structured 3-shot sequence (opening / climax / closing).' },
+    closeLbl:    { he: 'סגור', en: 'Close' }
+  };
+  function getLang(){ return document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'he'; }
+  function tr(k){ var l = getLang(); return T[k] && T[k][l] || (T[k] && T[k].he) || k; }
+
+  function isDismissed(){
+    try { return localStorage.getItem('paeWhatsNewV62Dismissed') === '1'; } catch(e) { return false; }
+  }
+  function dismiss(){
+    try { localStorage.setItem('paeWhatsNewV62Dismissed', '1'); } catch(e) {}
+    var el = document.getElementById('wnBanner');
+    if (el) el.classList.add('dismissed');
+  }
+
+  function buildModal(){
+    if (document.getElementById('wnModal')) return;
+    var feats = [
+      { e: '🎁', n: 'feat1Name', d: 'feat1Desc' },
+      { e: '📁', n: 'feat2Name', d: 'feat2Desc' },
+      { e: '📊', n: 'feat3Name', d: 'feat3Desc' },
+      { e: '💡', n: 'feat4Name', d: 'feat4Desc' },
+      { e: '🎲', n: 'feat5Name', d: 'feat5Desc' },
+      { e: '🎬', n: 'feat6Name', d: 'feat6Desc' }
+    ];
+    var featHtml = feats.map(function(f){
+      return '<div class="wn-feat">'
+        + '<span class="wn-feat-emoji">' + f.e + '</span>'
+        + '<div class="wn-feat-content">'
+        +   '<div class="wn-feat-name">' + tr(f.n).replace(/^\S+\s/, '') + '</div>'
+        +   '<div class="wn-feat-desc">' + tr(f.d) + '</div>'
+        + '</div></div>';
+    }).join('');
+
+    var html = '<div id="wnModal" class="wn-modal-overlay">'
+      + '<div class="wn-modal-box">'
+      + '<div class="wn-modal-title" id="wnModalTitle"></div>'
+      + '<div class="wn-modal-sub" id="wnModalSub"></div>'
+      + featHtml
+      + '<button type="button" class="wn-modal-close" id="wnModalClose"></button>'
+      + '</div></div>';
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    document.body.appendChild(div.firstChild);
+    var ov = document.getElementById('wnModal');
+    ov.addEventListener('click', function(e){ if (e.target === ov) closeModal(); });
+    document.getElementById('wnModalClose').addEventListener('click', function(){ closeModal(); dismiss(); });
+    document.getElementById('wnModalTitle').textContent = tr('modalTitle');
+    document.getElementById('wnModalSub').textContent = tr('modalSub');
+    document.getElementById('wnModalClose').textContent = tr('closeLbl');
+  }
+
+  function openModal(){
+    buildModal();
+    document.getElementById('wnModal').classList.add('show');
+  }
+  function closeModal(){
+    var ov = document.getElementById('wnModal');
+    if (ov) ov.classList.remove('show');
+  }
+
+  function injectBanner(){
+    if (document.getElementById('wnBanner')) return true;
+    if (isDismissed()) return true;
+    var rightCol = document.querySelector('.right-col');
+    if (!rightCol) return false;
+    var banner = document.createElement('div');
+    banner.className = 'wn-banner';
+    banner.id = 'wnBanner';
+    banner.innerHTML = '<span class="wn-emoji">✨</span>'
+      + '<span class="wn-title" id="wnBannerTitle"></span>'
+      + '<span class="wn-text" id="wnBannerText"></span>'
+      + '<button type="button" class="wn-close" id="wnBannerClose" aria-label="Dismiss">×</button>';
+    rightCol.insertBefore(banner, rightCol.firstChild);
+    banner.addEventListener('click', function(e){
+      if (e.target.id === 'wnBannerClose') return;
+      openModal();
+    });
+    document.getElementById('wnBannerClose').addEventListener('click', function(e){
+      e.stopPropagation();
+      dismiss();
+    });
+    updateLabels();
+    return true;
+  }
+
+  function updateLabels(){
+    var t = document.getElementById('wnBannerTitle');
+    var x = document.getElementById('wnBannerText');
+    if (t) t.textContent = tr('bannerTitle');
+    if (x) x.textContent = tr('bannerText');
+  }
+
+  function tryInject(){
+    if (injectBanner()) return;
+    setTimeout(tryInject, 400);
+  }
+  function observeLang(){
+    new MutationObserver(function(){
+      updateLabels();
+      // Rebuild modal in new language if open
+      var modal = document.getElementById('wnModal');
+      if (modal) modal.remove();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  }
+
+  function boot(){
+    tryInject();
+    observeLang();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  window.openWhatsNew = openModal;
+  window.dismissWhatsNew = dismiss;
+})();
 </script>
 
 

@@ -1,7 +1,7 @@
 // Palette AI v2 - Service Worker
-// Version: v2.0 | Layout B (text-first) consolidated module
-const CACHE = 'palette-ai-v2';
-const ASSETS = ['/palette-ai-v2/', '/palette-ai-v2/index.html', '/palette-ai-v2/manifest.json', '/palette-ai-v2/pae-v2-module.js'];
+// Version: v3.0 | S20 (2026-05-08): bumped after pae-video-module.js refactor (result-box moved to bottom + single action-row for IMG parity)
+const CACHE = 'palette-ai-v3.0';
+const ASSETS = ['/palette-ai-v2/', '/palette-ai-v2/index.html', '/palette-ai-v2/manifest.json', '/palette-ai-v2/pae-v2-module.js', '/palette-ai-v2/pae-video-module.js'];
 self.addEventListener('install', function(e) { e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(ASSETS); })); self.skipWaiting(); });
 self.addEventListener('activate', function(e) { e.waitUntil(caches.keys().then(function(keys) { return Promise.all(keys.filter(function(k) { return k !== CACHE; }).map(function(k) { return caches.delete(k); })); })); self.clients.claim(); });
 self.addEventListener('fetch', function(e) {
