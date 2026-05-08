@@ -11,50 +11,29 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
 <title>Palette AI 🎨</title>
-<!-- S21 (2026-05-08): PWA auto-update listener — transparent updates for cached mobile users.
-     When SW v3.1+ activates, it sends SW_NEW_VERSION message + calls navigate() on this page.
-     This listener also handles future SW updates via controllerchange event. sessionStorage flag prevents reload loops. -->
+<!-- S21.6 (2026-05-08): SW registration only — restores v1 banner-based update flow.
+     Banner UI ("גירסה חדשה זמינה" + רענן) is provided by installSwUpdateBanner() in pae-v6 module (already in code).
+     The register() call was lost during v1→v2 refactor; this restores the missing piece.
+     updateViaCache: 'none' forces fresh fetch of sw.js on each visit (bypass HTTP cache). -->
 <script>
 (function() {
   if (!('serviceWorker' in navigator)) return;
-  var KEY = '__pae_sw_reload_pending';
-  function safeReload() {
-    if (sessionStorage.getItem(KEY) === 'done') return;
-    try { sessionStorage.setItem(KEY, 'done'); } catch(e) {}
-    try { console.log('[pae-sw] new version detected — reloading'); } catch(e) {}
-    window.location.reload();
-  }
-  // 1. New SW takes control (after skipWaiting + claim) → auto reload
-  navigator.serviceWorker.addEventListener('controllerchange', safeReload);
-  // 2. Explicit message from SW activate handler → auto reload (backup channel)
-  navigator.serviceWorker.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'SW_NEW_VERSION') safeReload();
-  });
-  // 3. Clear the loop-prevention flag after page is stable (allows future updates)
-  window.addEventListener('load', function() {
-    setTimeout(function() { try { sessionStorage.removeItem(KEY); } catch(e) {} }, 3000);
-  });
-  // 4. CRITICAL FIX (S21.5, 2026-05-08): register the service worker.
-  //    Without this call, NO SW ever installs — explaining why mobile users (esp. Vivaldi) were stuck.
-  //    updateViaCache: 'none' forces browser to fetch sw.js from network on every page load,
-  //    bypassing GitHub Pages' default Cache-Control: max-age=600. Required for transparent updates.
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
-    .then(function(reg) { try { console.log('[pae-sw] registered, scope:', reg.scope); } catch(e) {} })
-    .catch(function(err) { try { console.warn('[pae-sw] register failed:', err && err.message); } catch(e) {} });
-
-  // 5. On startup, prompt any waiting SW to activate immediately (covers tabs already open during deploy)
-  navigator.serviceWorker.ready.then(function(reg) {
-    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    reg.addEventListener('updatefound', function() {
-      var newSW = reg.installing;
-      if (!newSW) return;
-      newSW.addEventListener('statechange', function() {
-        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-          newSW.postMessage({ type: 'SKIP_WAITING' });
-        }
+    .then(function(reg) {
+      try { console.log('[pae-sw] registered, scope:', reg.scope); } catch(e) {}
+      // Auto-prompt waiting SWs to activate (covers tabs already open during deploy)
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      reg.addEventListener('updatefound', function() {
+        var newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', function() {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
       });
-    });
-  }).catch(function(){});
+    })
+    .catch(function(err) { try { console.warn('[pae-sw] register failed:', err && err.message); } catch(e) {} });
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
