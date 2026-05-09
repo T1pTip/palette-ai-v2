@@ -1,11 +1,11 @@
 // Palette AI v2 — Service Worker
-// Version: v3.5 | BUG-PAE-019 (2026-05-09): engine pills = switch + copy + open AI site.
+// Version: v3.6 | BUG-PAE-019 (2026-05-09): engine pills = switch + copy + open AI site + webview fallback modal.
 //   - activate handler: cache cleanup + clients.claim() + broadcast PAE_NEW_VERSION
 //   - fetch handler: version.json ALWAYS network (never cached)
 //   - HTML: network-first
 //   - Other assets: cache-first
-const CACHE = 'palette-ai-v3.5';
-const VERSION = '3.5';
+const CACHE = 'palette-ai-v3.6';
+const VERSION = '3.6';
 const ASSETS = [
   '/palette-ai-v2/',
   '/palette-ai-v2/index.html',

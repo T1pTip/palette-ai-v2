@@ -3914,6 +3914,76 @@ if (document.readyState === 'loading') {
   if (window.__engineAdapterInstalled) return;
   window.__engineAdapterInstalled = true;
 
+  // BUG-PAE-019 v3.6 (2026-05-09): webview detection + manual fallback modal helpers.
+  // WhatsApp/IG/FB webviews silently block clipboard + window.open. Show modal with
+  // selectable textarea + tap-to-open link as fallback. Both IMG (S2) and VID (S3) pills use these.
+  if (typeof window.__pae_isWebview !== 'function') {
+    window.__pae_isWebview = function() {
+      var ua = (navigator.userAgent || '').toLowerCase();
+      if (/(wv|fbav|fban|fb_iab|instagram|line|musical_ly|bytedancewebview|pinterest|twitter\/)/i.test(ua)) return true;
+      // iOS without Safari/Chrome iOS/Firefox iOS = likely in-app webview (e.g., WhatsApp on iOS)
+      if (/iphone|ipad|ipod/i.test(ua) && !/safari/i.test(ua) && !/crios|fxios/i.test(ua)) return true;
+      // Android WebView often has 'wv' in UA, but some apps strip it. Final fallback: WhatsApp marker.
+      if (/whatsapp/i.test(ua)) return true;
+      return false;
+    };
+  }
+  if (typeof window.__pae_showPillFallbackModal !== 'function') {
+    window.__pae_showPillFallbackModal = function(adaptedText, engineName, engineUrl) {
+      var modal = document.getElementById('__pae_pillfb_modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = '__pae_pillfb_modal';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;font-family:inherit';
+        modal.innerHTML = [
+          '<div style="background:var(--surface,#1a1a25);border-radius:14px;padding:18px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5);direction:rtl;border:1px solid var(--border,#333)">',
+          '<div id="__pf_title" style="font-size:15px;font-weight:700;color:var(--text,#fff);margin-bottom:6px"></div>',
+          '<div style="font-size:12px;color:var(--muted,#aaa);margin-bottom:10px;line-height:1.5">בתוך WhatsApp/Instagram ההעתקה האוטומטית לא תמיד עובדת. סמן את הטקסט, לחץ העתק, ואז פתח את האתר.</div>',
+          '<textarea id="__pf_text" readonly style="width:100%;min-height:90px;max-height:180px;background:rgba(0,0,0,0.3);color:#0fa;border:1px solid var(--border,#444);border-radius:8px;padding:10px;font-family:monospace;font-size:12px;line-height:1.5;resize:vertical;direction:ltr;-webkit-text-size-adjust:100%;box-sizing:border-box"></textarea>',
+          '<div style="display:flex;gap:7px;margin-top:12px">',
+          '<button id="__pf_copy" type="button" style="flex:1;background:#0fa;color:#000;border:none;border-radius:8px;padding:11px 8px;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation">📋 בחר והעתק</button>',
+          '<a id="__pf_open" target="_blank" rel="noopener noreferrer" style="flex:1;background:#007aff;color:#fff;text-decoration:none;text-align:center;border-radius:8px;padding:11px 8px;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation">🔗 פתח</a>',
+          '<button id="__pf_close" type="button" style="background:transparent;color:var(--muted,#aaa);border:1px solid var(--border,#444);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:13px;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation">✕</button>',
+          '</div>',
+          '<div style="font-size:11px;color:var(--muted,#777);margin-top:10px;text-align:center;line-height:1.5">💡 לחוויה מיטבית: פתח את האפליקציה בדפדפן (Chrome/Safari) דרך תפריט ⋮</div>',
+          '</div>'
+        ].join('');
+        document.body.appendChild(modal);
+        var closeFn = function() { modal.style.display = 'none'; };
+        modal.querySelector('#__pf_close').addEventListener('click', closeFn);
+        modal.addEventListener('click', function(e) { if (e.target === modal) closeFn(); });
+        var copyFn = function() {
+          var ta = modal.querySelector('#__pf_text');
+          ta.focus();
+          ta.select();
+          try { ta.setSelectionRange(0, 999999); } catch(e) {}
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch(e) {}
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            try { navigator.clipboard.writeText(ta.value).catch(function(){}); } catch(e) {}
+          }
+          var btn = modal.querySelector('#__pf_copy');
+          var orig = btn.textContent;
+          btn.textContent = ok ? '✅ הועתק!' : '✓ סומן — Cmd/Ctrl+C';
+          setTimeout(function() { btn.textContent = orig; }, 2000);
+        };
+        modal.querySelector('#__pf_copy').addEventListener('click', copyFn);
+      }
+      modal.querySelector('#__pf_title').textContent = '📋 ' + engineName + ' — העתק ידני';
+      var ta = modal.querySelector('#__pf_text');
+      ta.value = adaptedText;
+      var openLink = modal.querySelector('#__pf_open');
+      openLink.href = engineUrl;
+      openLink.textContent = '🔗 ' + engineName;
+      modal.style.display = 'flex';
+      setTimeout(function() {
+        ta.focus();
+        ta.select();
+        try { ta.setSelectionRange(0, 999999); } catch(e) {}
+      }, 100);
+    };
+  }
+
   var IMG_ADAPTERS = {
     midjourney: {
       name: 'Midjourney',
@@ -4022,7 +4092,7 @@ if (document.readyState === 'loading') {
         btn.setAttribute('aria-label', a.name);
         btn.innerHTML = '<span class="engine-tab-emoji">' + a.emoji + '</span><span>' + a.name + '</span>';
         btn.addEventListener('click', function(){
-          // BUG-PAE-019 v3.5 (2026-05-09): pill = switch engine + HPE-enhance + engine format + copy + open site.
+          // BUG-PAE-019 v3.6 (2026-05-09): pill = switch + HPE + format + (webview→modal | normal→copy+open).
           // Debounce 300ms to prevent multi-tap opening multiple tabs.
           var __now = Date.now();
           if (window.__engineImgDebounce && __now - window.__engineImgDebounce < 300) return;
@@ -4030,14 +4100,18 @@ if (document.readyState === 'loading') {
           setEngine(key);
           var fp = document.getElementById('finalPrompt');
           var origText = fp ? (fp.textContent || '').trim() : '';
-          // If empty/placeholder, just switch engine — don't open
           if (!origText || origText.length < 5 || origText.indexOf('\u2728') !== -1) return;
-          // Apply HPE first (window.enhancePromptText is on window because top-level function decl).
-          // HPE works on comma-separated; engine adapter then formats for target engine. Order matters.
           var enhanced = (typeof window.enhancePromptText === 'function')
             ? window.enhancePromptText(origText) : origText;
           var adapted = IMG_ADAPTERS[key].format(enhanced);
-          // Sync clipboard via execCommand (preserves user-gesture for window.open)
+          // Webview fallback (WhatsApp/IG/FB silently block clipboard + window.open)
+          if (typeof window.__pae_isWebview === 'function' && window.__pae_isWebview()) {
+            if (typeof window.__pae_showPillFallbackModal === 'function') {
+              window.__pae_showPillFallbackModal(adapted, IMG_ADAPTERS[key].name, IMG_ADAPTERS[key].url);
+            }
+            return;
+          }
+          // Normal path: sync clipboard via execCommand (preserves user-gesture for window.open)
           try {
             var ta = document.createElement('textarea');
             ta.value = adapted;
@@ -4047,15 +4121,12 @@ if (document.readyState === 'loading') {
             document.execCommand('copy');
             document.body.removeChild(ta);
           } catch(e) {}
-          // Async backup (fire-and-forget, won't break gesture)
           if (navigator.clipboard && navigator.clipboard.writeText) {
             try { navigator.clipboard.writeText(adapted).catch(function(){}); } catch(e) {}
           }
-          // Toast feedback (window.showToast is on window because top-level function decl)
           if (typeof window.showToast === 'function') {
             try { window.showToast('✅ ' + IMG_ADAPTERS[key].name); } catch(e) {}
           }
-          // Open AI tool site (sync, within user-gesture)
           try { window.open(IMG_ADAPTERS[key].url, '_blank', 'noopener'); }
           catch(e) { window.location.href = IMG_ADAPTERS[key].url; }
         });
@@ -4278,25 +4349,28 @@ if (document.readyState === 'loading') {
         btn.setAttribute('aria-label', a.name);
         btn.innerHTML = '<span class="engine-tab-emoji">' + a.emoji + '</span><span>' + a.name + '</span>';
         btn.addEventListener('click', function(){
-          // BUG-PAE-019 v3.5 (2026-05-09): pill = switch + copyVideoPrompt() + open site.
-          // Calling window.copyVideoPrompt() preserves S12 Multi-Shot wrapper + S3 replacement (engine format).
-          // Multi-shot WAS being bypassed in v3.5 inline implementation — this fixes that regression.
-          // Debounce 300ms to prevent multi-tap opening multiple tabs.
+          // BUG-PAE-019 v3.6 (2026-05-09): pill = switch + (webview→modal | normal→copyVideoPrompt+open).
+          // Debounce 300ms.
           var __now = Date.now();
           if (window.__engineVidDebounce && __now - window.__engineVidDebounce < 300) return;
           window.__engineVidDebounce = __now;
           setVidEngine(key);
           var fp = document.getElementById('vidFinalPrompt');
           var origText = fp ? (fp.textContent || '').trim() : '';
-          // If empty/placeholder/translating, just switch engine — don't open
           if (!origText || origText.length < 5 || /^✨|^לחץ/.test(origText) || /^מתרגם|^Translating/.test(origText)) return;
-          // Trigger full chain: S12 Multi-Shot wrapper → S3 replacement (engine format) → clipboard.
-          // copyVideoPrompt is async but starts sync; the await on clipboard.writeText returns control
-          // to us before user-gesture expires — window.open below still works.
+          // Webview fallback: build adapted text manually + show modal.
+          // Note: Multi-Shot (S12) is NOT applied in webview path — toMultiShot is closure-scoped in S12 IIFE.
+          if (typeof window.__pae_isWebview === 'function' && window.__pae_isWebview()) {
+            var adapted = VID_ADAPTERS[key].format(origText);
+            if (typeof window.__pae_showPillFallbackModal === 'function') {
+              window.__pae_showPillFallbackModal(adapted, VID_ADAPTERS[key].name, VID_ADAPTERS[key].url);
+            }
+            return;
+          }
+          // Normal path: full chain (S12 Multi-Shot wrapper → S3 replacement → clipboard).
           if (typeof window.copyVideoPrompt === 'function') {
             try { window.copyVideoPrompt(); } catch(e) {}
           }
-          // Open AI tool site (sync, within user-gesture)
           try { window.open(VID_ADAPTERS[key].url, '_blank', 'noopener'); }
           catch(e) { window.location.href = VID_ADAPTERS[key].url; }
         });
