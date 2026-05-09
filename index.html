@@ -3734,11 +3734,10 @@ if (document.readyState === 'loading') {
    Without explicit order, it defaults to 0 and appears at TOP of flex layout instead of
    between result-box (order:6) and action-row (order:7). Fix: tie with result-box order. */
 .app > #engineBar { order: 6 !important; }
-/* S18 (UX cleanup) REVERTED 2026-05-09: vid-platform-row was hidden assuming engine bar
-   replaced it, but engine bar only switches FORMAT — doesn't open external sites.
-   Hiding removed the "open Kling/Pika/Runway with prompt" feature entirely.
-   BUG-PAE-019: re-enabled along with openPlatform sync fix in pae-video-module.js. */
-/* .vid-platform-row { display: none !important; } */
+/* S18 (UX cleanup) v3.5 (2026-05-09): hide .vid-platform-row again — its 3 buttons
+   (Kling/Pika/Runway with ↗) are now redundant since engine pills do switch + copy + open
+   atomically (BUG-PAE-019 v3.5). Engine bar covers all 6 engines uniformly. */
+.vid-platform-row { display: none !important; }
 .engine-tab{background:transparent;border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:99px;cursor:pointer;font-family:inherit;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;gap:4px;min-height:28px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .engine-tab:hover{border-color:var(--a4);background:var(--a1)}
 .engine-tab:active{opacity:.85;transform:scale(.97)}
@@ -3919,26 +3918,31 @@ if (document.readyState === 'loading') {
     midjourney: {
       name: 'Midjourney',
       emoji: '🎬',
+      url: 'https://www.midjourney.com/imagine',
       format: function(txt){ return txt; }
     },
     nanoBanana: {
       name: 'Nano Banana',
       emoji: '🍌',
+      url: 'https://gemini.google.com/app',
       format: function(txt){ return stripFlagsAddArText(txt); }
     },
     dalle: {
       name: 'DALL-E',
       emoji: '🎨',
+      url: 'https://chatgpt.com',
       format: function(txt){ return toSentences(stripFlagsAddArText(txt)); }
     },
     chatgpt: {
       name: 'ChatGPT',
       emoji: '🤖',
+      url: 'https://chatgpt.com',
       format: function(txt){ return stripAllFlags(txt); }
     },
     stableDiffusion: {
       name: 'Stable Diffusion',
       emoji: '🎯',
+      url: 'https://stablediffusionweb.com/',
       format: function(txt){ return sdFormat(txt); }
     }
   };
@@ -4017,7 +4021,44 @@ if (document.readyState === 'loading') {
         btn.setAttribute('role', 'tab');
         btn.setAttribute('aria-label', a.name);
         btn.innerHTML = '<span class="engine-tab-emoji">' + a.emoji + '</span><span>' + a.name + '</span>';
-        btn.addEventListener('click', function(){ setEngine(key); });
+        btn.addEventListener('click', function(){
+          // BUG-PAE-019 v3.5 (2026-05-09): pill = switch engine + HPE-enhance + engine format + copy + open site.
+          // Debounce 300ms to prevent multi-tap opening multiple tabs.
+          var __now = Date.now();
+          if (window.__engineImgDebounce && __now - window.__engineImgDebounce < 300) return;
+          window.__engineImgDebounce = __now;
+          setEngine(key);
+          var fp = document.getElementById('finalPrompt');
+          var origText = fp ? (fp.textContent || '').trim() : '';
+          // If empty/placeholder, just switch engine — don't open
+          if (!origText || origText.length < 5 || origText.indexOf('\u2728') !== -1) return;
+          // Apply HPE first (window.enhancePromptText is on window because top-level function decl).
+          // HPE works on comma-separated; engine adapter then formats for target engine. Order matters.
+          var enhanced = (typeof window.enhancePromptText === 'function')
+            ? window.enhancePromptText(origText) : origText;
+          var adapted = IMG_ADAPTERS[key].format(enhanced);
+          // Sync clipboard via execCommand (preserves user-gesture for window.open)
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = adapted;
+            ta.style.cssText = 'position:fixed;top:-9999px;opacity:0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          } catch(e) {}
+          // Async backup (fire-and-forget, won't break gesture)
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            try { navigator.clipboard.writeText(adapted).catch(function(){}); } catch(e) {}
+          }
+          // Toast feedback (window.showToast is on window because top-level function decl)
+          if (typeof window.showToast === 'function') {
+            try { window.showToast('✅ ' + IMG_ADAPTERS[key].name); } catch(e) {}
+          }
+          // Open AI tool site (sync, within user-gesture)
+          try { window.open(IMG_ADAPTERS[key].url, '_blank', 'noopener'); }
+          catch(e) { window.location.href = IMG_ADAPTERS[key].url; }
+        });
         bar.appendChild(btn);
       });
     }
@@ -4102,32 +4143,38 @@ if (document.readyState === 'loading') {
     kling: {
       name: 'Kling',
       emoji: '🎬',
+      url: 'https://app.klingai.com/global/text-to-video/new',
       format: function(t){ return t; }
     },
     pika: {
       name: 'Pika',
       emoji: '🌀',
+      url: 'https://pika.art/',
       format: function(t){ return pikaFormat(t); }
     },
     runway: {
       name: 'Runway',
       emoji: '🚀',
+      url: 'https://app.runwayml.com/',
       format: function(t){ return runwayFormat(t); }
     },
     // S10: 3 new engines (Veo, Luma, Hailuo) — 2026-05-06
     veo: {
       name: 'Veo',
       emoji: '🟢',
+      url: 'https://gemini.google.com/app',
       format: function(t){ return veoFormat(t); }
     },
     luma: {
       name: 'Luma',
       emoji: '🌙',
+      url: 'https://lumalabs.ai/dream-machine',
       format: function(t){ return lumaFormat(t); }
     },
     hailuo: {
       name: 'Hailuo',
       emoji: '⚡',
+      url: 'https://hailuoai.video/',
       format: function(t){ return hailuoFormat(t); }
     }
   };
@@ -4230,7 +4277,29 @@ if (document.readyState === 'loading') {
         btn.setAttribute('role', 'tab');
         btn.setAttribute('aria-label', a.name);
         btn.innerHTML = '<span class="engine-tab-emoji">' + a.emoji + '</span><span>' + a.name + '</span>';
-        btn.addEventListener('click', function(){ setVidEngine(key); });
+        btn.addEventListener('click', function(){
+          // BUG-PAE-019 v3.5 (2026-05-09): pill = switch + copyVideoPrompt() + open site.
+          // Calling window.copyVideoPrompt() preserves S12 Multi-Shot wrapper + S3 replacement (engine format).
+          // Multi-shot WAS being bypassed in v3.5 inline implementation — this fixes that regression.
+          // Debounce 300ms to prevent multi-tap opening multiple tabs.
+          var __now = Date.now();
+          if (window.__engineVidDebounce && __now - window.__engineVidDebounce < 300) return;
+          window.__engineVidDebounce = __now;
+          setVidEngine(key);
+          var fp = document.getElementById('vidFinalPrompt');
+          var origText = fp ? (fp.textContent || '').trim() : '';
+          // If empty/placeholder/translating, just switch engine — don't open
+          if (!origText || origText.length < 5 || /^✨|^לחץ/.test(origText) || /^מתרגם|^Translating/.test(origText)) return;
+          // Trigger full chain: S12 Multi-Shot wrapper → S3 replacement (engine format) → clipboard.
+          // copyVideoPrompt is async but starts sync; the await on clipboard.writeText returns control
+          // to us before user-gesture expires — window.open below still works.
+          if (typeof window.copyVideoPrompt === 'function') {
+            try { window.copyVideoPrompt(); } catch(e) {}
+          }
+          // Open AI tool site (sync, within user-gesture)
+          try { window.open(VID_ADAPTERS[key].url, '_blank', 'noopener'); }
+          catch(e) { window.location.href = VID_ADAPTERS[key].url; }
+        });
         bar.appendChild(btn);
       });
     }
