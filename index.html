@@ -3655,7 +3655,13 @@ if (document.readyState === 'loading') {
     safeCall(installRenderHistoryGuard,'renderHistory guard');
     safeCall(installSwUpdateBanner,    'SW update banner');
     safeCall(installChipA11y,          'chip a11y');
-    safeCall(installLangReloadHint,    'lang reload hint');
+    // BUG-PAE-019 fix (2026-05-09): disabled — popup flash on lang change.
+    // installLangReloadHint wraps setLang and creates .pae-lang-toast with
+    // "Reload" btn on every lang change. pae-v2-module's suppressLangToast
+    // tries to remove it via MutationObserver but observer fires AFTER paint,
+    // so users briefly see the popup flash. v2 lang switching is seamless
+    // — no reload needed. Cleaner to never create the toast.
+    // safeCall(installLangReloadHint,    'lang reload hint');
     console.log(SIGNAL);
   }
 
@@ -3728,10 +3734,11 @@ if (document.readyState === 'loading') {
    Without explicit order, it defaults to 0 and appears at TOP of flex layout instead of
    between result-box (order:6) and action-row (order:7). Fix: tie with result-box order. */
 .app > #engineBar { order: 6 !important; }
-/* S18 (UX cleanup): hide .vid-platform-row — the 3 external-link buttons (Kling/Pika/Runway)
-   are now redundant since the engine bar (#vidEngineBar) provides full engine selection.
-   Keeps the buttons in DOM (functional) but invisible in UI. User-requested 2026-05-08. */
-.vid-platform-row { display: none !important; }
+/* S18 (UX cleanup) REVERTED 2026-05-09: vid-platform-row was hidden assuming engine bar
+   replaced it, but engine bar only switches FORMAT — doesn't open external sites.
+   Hiding removed the "open Kling/Pika/Runway with prompt" feature entirely.
+   BUG-PAE-019: re-enabled along with openPlatform sync fix in pae-video-module.js. */
+/* .vid-platform-row { display: none !important; } */
 .engine-tab{background:transparent;border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:99px;cursor:pointer;font-family:inherit;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;gap:4px;min-height:28px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .engine-tab:hover{border-color:var(--a4);background:var(--a1)}
 .engine-tab:active{opacity:.85;transform:scale(.97)}

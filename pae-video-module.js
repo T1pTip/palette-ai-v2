@@ -677,18 +677,22 @@
     saveVideoHistory(prompt);
   }
 
-  async function openPlatform(name) {
+  // BUG-PAE-019 fix (2026-05-09): popup-blocker bug.
+  // Original was async + setTimeout(150ms) which broke the user-gesture chain,
+  // causing window.open to be blocked silently by Chrome desktop popup-blocker
+  // and all mobile WebViews. Fix: read state.lastVideoPrompt synchronously
+  // (no await), call window.open synchronously (no setTimeout) — within
+  // the user-click context that browsers require for popups.
+  function openPlatform(name) {
     var p = PLATFORMS[name];
     if (!p) return;
-    var prompt = await ensurePromptReady();
+    var prompt = state.lastVideoPrompt;
     if (!prompt) { toast(tr('promptEmpty'), 'err'); return; }
     copyToClipboard(prompt);
     saveVideoHistory(prompt);
     toast(tr('copied') + p.label + tr('pasteHint'), 'deep');
-    setTimeout(function() {
-      try { window.open(p.url, '_blank', 'noopener'); }
-      catch(e) { window.location.href = p.url; }
-    }, 150);
+    try { window.open(p.url, '_blank', 'noopener'); }
+    catch(e) { window.location.href = p.url; }
   }
 
   async function shareVideo() {

@@ -1,1 +1,1 @@
-{"version":"3.3","deployTime":"2026-05-08T21:00:00Z","notes":"S22: triple-redundant version check"}
+{"version":"3.4","deployTime":"2026-05-09T18:55:00Z","notes":"BUG-PAE-019: VID openPlatform sync fix (popup blocker) + lang toast popup removed + vid-platform-row unhidden"}
