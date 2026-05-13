@@ -769,7 +769,7 @@ body {
           <textarea id="userInput" rows="4" placeholder="תאר/י את התמונה שאת/ה רוצה/ה ליצור...
 או פשוט תלחצ/י על כפתור ההפתעה :)" aria-label="תאר את התמונה שאתה רוצה ליצור"></textarea>
         </div>
-    <div class="chips-wrap" id="selectedBar"><div class="sel-chip"><span class="sel-chip-x">✕</span>צבעי מים</div><div class="sel-chip"><span class="sel-chip-x">✕</span>צבעים חמים</div><div class="sel-chip"><span class="sel-chip-x">✕</span>פיקסל</div><div class="sel-chip"><span class="sel-chip-x">✕</span>חיוך</div></div>
+    <div class="chips-wrap" id="selectedBar"></div>
     <div class="result-box">
       <div class="result-top">
         <div class="result-label-wrap">
@@ -784,9 +784,9 @@ body {
           </div>
           <span id="resultLabel">פרומפט מוכן</span>
         </div>
-        <span id="charCount">346 תווים</span>
+        <span id="charCount">0 תווים</span>
       </div>
-      <div id="finalPrompt" class="prompt-ready">דרקון חמוד שמנשף בועות סבון, smiling, warm genuine smile, happy expression, joyful face, watercolor painting, soft edges, flowing colors, pixel art, 16-bit, retro game style, warm color palette, amber tones, orange and red hues, warm cozy atmosphere --no bad anatomy, deformed hands, extra fingers, text, watermark, blurry, lowres, ugly, mutation</div>
+      <div id="finalPrompt" class="prompt-empty"></div>
     </div>
     <div class="action-row">
       <button class="btn-copy" id="copyBtn" onclick="copyPrompt()">
@@ -844,7 +844,7 @@ body {
       </div>
       <button class="ob-close" onclick="dismissOnboarding()" aria-label="סגור" title="סגור">✕</button>
     </div>
-    <div class="cat-grid" id="catGrid"><button class="cat-pill" data-ci="0"><span class="cat-badge" id="badge-0">0</span><span class="cat-emoji">📸</span><span class="cat-name" style="display: none;">סגנון צילום</span></button><button class="cat-pill" data-ci="1"><span class="cat-badge on" id="badge-1">2</span><span class="cat-emoji">🎨</span><span class="cat-name">סגנון אמנות</span></button><button class="cat-pill" data-ci="2"><span class="cat-badge" id="badge-2">0</span><span class="cat-emoji">🎬</span><span class="cat-name" style="display: none;">ז׳אנר</span></button><button class="cat-pill" data-ci="3"><span class="cat-badge" id="badge-3">0</span><span class="cat-emoji">💡</span><span class="cat-name">תאורה</span></button><button class="cat-pill" data-ci="4"><span class="cat-badge" id="badge-4">0</span><span class="cat-emoji">⚙️</span><span class="cat-name">איכות</span></button><button class="cat-pill" data-ci="5"><span class="cat-badge" id="badge-5">0</span><span class="cat-emoji">🎭</span><span class="cat-name">דמויות</span></button><button class="cat-pill" data-ci="6"><span class="cat-badge" id="badge-6">0</span><span class="cat-emoji">🎬</span><span class="cat-name">מצלמה</span></button><button class="cat-pill" data-ci="7"><span class="cat-badge" id="badge-7">0</span><span class="cat-emoji">👗</span><span class="cat-name" style="display: none;">אופנה</span></button><button class="cat-pill" data-ci="8"><span class="cat-badge" id="badge-8">0</span><span class="cat-emoji">🌍</span><span class="cat-name" style="display: none;">מראה</span></button><button class="cat-pill" data-ci="9"><span class="cat-badge" id="badge-9">0</span><span class="cat-emoji">💇</span><span class="cat-name" style="display: none;">גוף</span></button><button class="cat-pill" data-ci="10"><span class="cat-badge" id="badge-10">0</span><span class="cat-emoji">🌆</span><span class="cat-name">סביבה</span></button><button class="cat-pill" data-ci="11"><span class="cat-badge" id="badge-11">0</span><span class="cat-emoji">🔮</span><span class="cat-name">אסתטיקה</span></button><button class="cat-pill" data-ci="12"><span class="cat-badge on" id="badge-12">1</span><span class="cat-emoji">😊</span><span class="cat-name" style="display: none;">הבעה</span></button><button class="cat-pill" data-ci="13"><span class="cat-badge" id="badge-13">0</span><span class="cat-emoji">🧍</span><span class="cat-name" style="display: none;">פוזה</span></button><button class="cat-pill" data-ci="14"><span class="cat-badge on" id="badge-14">1</span><span class="cat-emoji">🖌️</span><span class="cat-name" style="display: none;">צבעים</span></button><button class="cat-pill" data-ci="15"><span class="cat-badge" id="badge-15">0</span><span class="cat-emoji">🧸</span><span class="cat-name" style="display: none;">צעצועים</span></button><button class="cat-pill" data-ci="16"><span class="cat-badge" id="badge-16">0</span><span class="cat-emoji">📷</span><span class="cat-name" style="display: none;">סגנון ישן ורג…</span></button><button class="cat-pill" data-ci="17"><span class="cat-badge" id="badge-17">0</span><span class="cat-emoji">🃏</span><span class="cat-name" style="display: none;">קריקטורה</span></button><button class="cat-pill" data-ci="18"><span class="cat-badge" id="badge-18">0</span><span class="cat-emoji">🐾</span><span class="cat-name" style="display: none;">חיות</span></button><button class="cat-pill" data-ci="19"><span class="cat-badge" id="badge-19">0</span><span class="cat-emoji">✨</span><span class="cat-name" style="display: none;">אפקטים</span></button><button class="cat-pill" data-ci="20"><span class="cat-badge" id="badge-20">0</span><span class="cat-emoji">🎞️</span><span class="cat-name" style="display: none;">סגנון סרטים</span></button><button class="cat-pill" data-ci="21"><span class="cat-badge" id="badge-21">0</span><span class="cat-emoji">🧱</span><span class="cat-name" style="display: none;">חומרים</span></button><button class="cat-pill" data-ci="22"><span class="cat-badge" id="badge-22">0</span><span class="cat-emoji">🏙️</span><span class="cat-name" style="display: none;">בניינים וחדרים</span></button><button class="cat-pill" data-ci="23"><span class="cat-badge" id="badge-23">0</span><span class="cat-emoji">🌿</span><span class="cat-name" style="display: none;">טבע מקרוב</span></button><button class="cat-pill" data-ci="24"><span class="cat-badge" id="badge-24">0</span><span class="cat-emoji">🌊</span><span class="cat-name" style="display: none;">מזג אוויר</span></button><button class="cat-pill" data-ci="25"><span class="cat-badge" id="badge-25">0</span><span class="cat-emoji">📱</span><span class="cat-name" style="display: none;">טרנדים</span></button><button class="cat-pill" data-ci="26"><span class="cat-badge" id="badge-26">0</span><span class="cat-emoji">🎮</span><span class="cat-name" style="display: none;">משחקים</span></button><button class="cat-pill" data-ci="27"><span class="cat-badge" id="badge-27">0</span><span class="cat-emoji">🖼️</span><span class="cat-name" style="display: none;">פוסטרים</span></button><button class="cat-pill" data-ci="28"><span class="cat-badge" id="badge-28">0</span><span class="cat-emoji">🤗</span><span class="cat-name" style="display: none;">נוסטלגיה</span></button><button class="cat-pill" data-ci="29"><span class="cat-badge" id="badge-29">0</span><span class="cat-emoji">🌱</span><span class="cat-name" style="display: none;">עתיד ירוק</span></button><button class="cat-pill" data-ci="30"><span class="cat-badge" id="badge-30">0</span><span class="cat-emoji">🏆</span><span class="cat-name" style="display: none;">פרופיל מקצועי</span></button><button class="cat-pill" data-ci="31"><span class="cat-badge" id="badge-31">0</span><span class="cat-emoji">🍃</span><span class="cat-name" style="display: none;">עונות השנה</span></button></div>
+    <div class="cat-grid" id="catGrid"><button class="cat-pill" data-ci="0"><span class="cat-badge" id="badge-0">0</span><span class="cat-emoji">📸</span><span class="cat-name" style="display: none;">סגנון צילום</span></button><button class="cat-pill" data-ci="1"><span class="cat-badge" id="badge-1">0</span><span class="cat-emoji">🎨</span><span class="cat-name">סגנון אמנות</span></button><button class="cat-pill" data-ci="2"><span class="cat-badge" id="badge-2">0</span><span class="cat-emoji">🎬</span><span class="cat-name" style="display: none;">ז׳אנר</span></button><button class="cat-pill" data-ci="3"><span class="cat-badge" id="badge-3">0</span><span class="cat-emoji">💡</span><span class="cat-name">תאורה</span></button><button class="cat-pill" data-ci="4"><span class="cat-badge" id="badge-4">0</span><span class="cat-emoji">⚙️</span><span class="cat-name">איכות</span></button><button class="cat-pill" data-ci="5"><span class="cat-badge" id="badge-5">0</span><span class="cat-emoji">🎭</span><span class="cat-name">דמויות</span></button><button class="cat-pill" data-ci="6"><span class="cat-badge" id="badge-6">0</span><span class="cat-emoji">🎬</span><span class="cat-name">מצלמה</span></button><button class="cat-pill" data-ci="7"><span class="cat-badge" id="badge-7">0</span><span class="cat-emoji">👗</span><span class="cat-name" style="display: none;">אופנה</span></button><button class="cat-pill" data-ci="8"><span class="cat-badge" id="badge-8">0</span><span class="cat-emoji">🌍</span><span class="cat-name" style="display: none;">מראה</span></button><button class="cat-pill" data-ci="9"><span class="cat-badge" id="badge-9">0</span><span class="cat-emoji">💇</span><span class="cat-name" style="display: none;">גוף</span></button><button class="cat-pill" data-ci="10"><span class="cat-badge" id="badge-10">0</span><span class="cat-emoji">🌆</span><span class="cat-name">סביבה</span></button><button class="cat-pill" data-ci="11"><span class="cat-badge" id="badge-11">0</span><span class="cat-emoji">🔮</span><span class="cat-name">אסתטיקה</span></button><button class="cat-pill" data-ci="12"><span class="cat-badge" id="badge-12">0</span><span class="cat-emoji">😊</span><span class="cat-name" style="display: none;">הבעה</span></button><button class="cat-pill" data-ci="13"><span class="cat-badge" id="badge-13">0</span><span class="cat-emoji">🧍</span><span class="cat-name" style="display: none;">פוזה</span></button><button class="cat-pill" data-ci="14"><span class="cat-badge" id="badge-14">0</span><span class="cat-emoji">🖌️</span><span class="cat-name" style="display: none;">צבעים</span></button><button class="cat-pill" data-ci="15"><span class="cat-badge" id="badge-15">0</span><span class="cat-emoji">🧸</span><span class="cat-name" style="display: none;">צעצועים</span></button><button class="cat-pill" data-ci="16"><span class="cat-badge" id="badge-16">0</span><span class="cat-emoji">📷</span><span class="cat-name" style="display: none;">סגנון ישן ורג…</span></button><button class="cat-pill" data-ci="17"><span class="cat-badge" id="badge-17">0</span><span class="cat-emoji">🃏</span><span class="cat-name" style="display: none;">קריקטורה</span></button><button class="cat-pill" data-ci="18"><span class="cat-badge" id="badge-18">0</span><span class="cat-emoji">🐾</span><span class="cat-name" style="display: none;">חיות</span></button><button class="cat-pill" data-ci="19"><span class="cat-badge" id="badge-19">0</span><span class="cat-emoji">✨</span><span class="cat-name" style="display: none;">אפקטים</span></button><button class="cat-pill" data-ci="20"><span class="cat-badge" id="badge-20">0</span><span class="cat-emoji">🎞️</span><span class="cat-name" style="display: none;">סגנון סרטים</span></button><button class="cat-pill" data-ci="21"><span class="cat-badge" id="badge-21">0</span><span class="cat-emoji">🧱</span><span class="cat-name" style="display: none;">חומרים</span></button><button class="cat-pill" data-ci="22"><span class="cat-badge" id="badge-22">0</span><span class="cat-emoji">🏙️</span><span class="cat-name" style="display: none;">בניינים וחדרים</span></button><button class="cat-pill" data-ci="23"><span class="cat-badge" id="badge-23">0</span><span class="cat-emoji">🌿</span><span class="cat-name" style="display: none;">טבע מקרוב</span></button><button class="cat-pill" data-ci="24"><span class="cat-badge" id="badge-24">0</span><span class="cat-emoji">🌊</span><span class="cat-name" style="display: none;">מזג אוויר</span></button><button class="cat-pill" data-ci="25"><span class="cat-badge" id="badge-25">0</span><span class="cat-emoji">📱</span><span class="cat-name" style="display: none;">טרנדים</span></button><button class="cat-pill" data-ci="26"><span class="cat-badge" id="badge-26">0</span><span class="cat-emoji">🎮</span><span class="cat-name" style="display: none;">משחקים</span></button><button class="cat-pill" data-ci="27"><span class="cat-badge" id="badge-27">0</span><span class="cat-emoji">🖼️</span><span class="cat-name" style="display: none;">פוסטרים</span></button><button class="cat-pill" data-ci="28"><span class="cat-badge" id="badge-28">0</span><span class="cat-emoji">🤗</span><span class="cat-name" style="display: none;">נוסטלגיה</span></button><button class="cat-pill" data-ci="29"><span class="cat-badge" id="badge-29">0</span><span class="cat-emoji">🌱</span><span class="cat-name" style="display: none;">עתיד ירוק</span></button><button class="cat-pill" data-ci="30"><span class="cat-badge" id="badge-30">0</span><span class="cat-emoji">🏆</span><span class="cat-name" style="display: none;">פרופיל מקצועי</span></button><button class="cat-pill" data-ci="31"><span class="cat-badge" id="badge-31">0</span><span class="cat-emoji">🍃</span><span class="cat-name" style="display: none;">עונות השנה</span></button></div>
     <div class="tag-panel" id="tagPanel">
       <div class="tag-panel-header">
         <span class="tag-panel-title" id="tagPanelTitle"></span>
@@ -3675,7 +3675,378 @@ if (document.readyState === 'loading') {
   start();
 })();
 </script>
-  </main>
+  
+<!-- S23: Subject Expander (2026-05-13) — Peroot-style subject expansion BEHIND THE SCENES.
+     Replaces user-text portion of finalPrompt with expanded English description.
+     userInput textarea stays unchanged. 4 SKIP gates protect power users + pool sources. -->
+<script>
+(function(){
+  if (window.__subjectExpanderInstalled) return;
+  window.__subjectExpanderInstalled = true;
+
+  var THRESHOLD_DEFAULT = 40;
+  var STORAGE_KEY_THRESHOLD = 'paeExpanderThreshold';
+  var STORAGE_KEY_ENABLED = 'paeExpanderEnabled';
+
+  var SUBJECT_BANKS = {
+    cat: {
+      he_kw: ['חתול','חתולה','חתלתול','חתלתולה'],
+      en_kw: ['cat','kitten','feline','tabby'],
+      base: 'cat',
+      breeds: ['ginger tabby','silver tabby','orange','black','gray','Persian','Siamese'],
+      age: ['','fluffy','young','small'],
+      action: ['sitting peacefully','curled up','gazing with curiosity','stretching','resting'],
+      feature: ['bright green eyes','piercing blue eyes','soft fluffy fur','detailed whiskers']
+    },
+    dog: {
+      he_kw: ['כלב','כלבה','גור','כלבלב','גורי'],
+      en_kw: ['dog','puppy','canine','retriever'],
+      base: 'dog',
+      breeds: ['Golden retriever','Labrador','Border collie','Husky','Beagle','Corgi'],
+      age: ['','puppy','young','energetic'],
+      action: ['playing joyfully','sitting attentively','running freely','looking at the camera'],
+      feature: ['soft floppy ears','shiny coat','expressive eyes','wagging tail']
+    },
+    woman: {
+      he_kw: ['אישה','אשה','בחורה','גברת','נערה'],
+      en_kw: ['woman','lady','female'],
+      base: 'woman',
+      breeds: ['young woman','elegant woman','confident woman'],
+      age: [''],
+      action: ['standing confidently','walking gracefully','looking thoughtful','in profile'],
+      feature: ['flowing hair','expressive features','graceful pose','detailed eyes']
+    },
+    man: {
+      he_kw: ['גבר','בחור','איש','אדון'],
+      en_kw: ['man','gentleman','guy'],
+      base: 'man',
+      breeds: ['young man','confident man','distinguished man'],
+      age: [''],
+      action: ['standing','walking purposefully','looking ahead','in profile'],
+      feature: ['strong features','confident pose','detailed eyes']
+    },
+    child: {
+      he_kw: ['ילד','ילדה','תינוק','תינוקת','פעוט','פעוטה'],
+      en_kw: ['child','kid','baby','toddler'],
+      base: 'child',
+      breeds: ['young child','small child','curious child'],
+      age: [''],
+      action: ['playing happily','laughing','looking curious','smiling brightly'],
+      feature: ['bright eyes','innocent expression','joyful pose']
+    },
+    bird: {
+      he_kw: ['ציפור','עוף','נשר','יונה'],
+      en_kw: ['bird','eagle','owl','parrot'],
+      base: 'bird',
+      breeds: ['majestic eagle','colorful songbird','graceful crane','wise owl'],
+      age: [''],
+      action: ['perched','in flight','soaring','gazing intently'],
+      feature: ['detailed feathers','sharp talons','piercing eyes']
+    },
+    horse: {
+      he_kw: ['סוס','סוסה'],
+      en_kw: ['horse','stallion','mare'],
+      base: 'horse',
+      breeds: ['white stallion','black mare','chestnut horse','wild mustang'],
+      age: [''],
+      action: ['galloping','standing proudly','in motion','grazing peacefully'],
+      feature: ['flowing mane','muscular form','expressive eyes']
+    },
+    dragon: {
+      he_kw: ['דרקון'],
+      en_kw: ['dragon','wyvern'],
+      base: 'dragon',
+      breeds: ['ancient dragon','fierce dragon','mythical dragon','glowing dragon'],
+      age: [''],
+      action: ['breathing fire','soaring through clouds','coiled and waiting','roaring'],
+      feature: ['iridescent scales','detailed wings','sharp claws','piercing eyes']
+    },
+    landscape: {
+      he_kw: ['נוף','הר','הרים','ים','אגם','יער','שדה','מדבר','עמק','חוף'],
+      en_kw: ['landscape','mountain','ocean','forest','field','desert','valley','beach'],
+      base: 'landscape',
+      is_scene: true,
+      breeds: ['rolling mountain range','pristine ocean coastline','dense ancient forest','open wildflower field','desert sand dunes'],
+      age: [''],
+      action: ['at golden hour','at sunrise','at sunset','at blue hour','under a starry sky'],
+      feature: ['atmospheric haze','dramatic clouds','rolling hills','distant horizon']
+    },
+    building: {
+      he_kw: ['בית','בנין','בניין','מבנה','ארמון','מגדל','כפר','עיר'],
+      en_kw: ['house','building','castle','tower','village','city'],
+      base: 'building',
+      is_scene: true,
+      breeds: ['Victorian house','medieval castle','modern skyscraper','ancient temple','rustic village'],
+      age: [''],
+      action: ['standing tall','overlooking the valley','at golden hour','silhouetted against the sky'],
+      feature: ['intricate architectural details','weathered facade','grand entrance','historic windows']
+    },
+    vehicle: {
+      he_kw: ['רכב','אוטו','מכונית','אופנוע','משאית','אופניים'],
+      en_kw: ['car','vehicle','motorcycle','truck','bicycle'],
+      base: 'vehicle',
+      is_scene: true,
+      breeds: ['vintage sports car','classic motorcycle','sleek modern car','rugged truck','retro bicycle'],
+      age: [''],
+      action: ['parked on a winding road','in motion','racing','cruising'],
+      feature: ['polished bodywork','chrome details','dramatic shadows']
+    },
+    fish: {
+      he_kw: ['דג','דגים','כריש','דולפין','לוויתן'],
+      en_kw: ['fish','shark','dolphin','whale'],
+      base: 'fish',
+      is_scene: true,
+      breeds: ['tropical fish','majestic whale','graceful dolphin','colorful coral fish'],
+      age: [''],
+      action: ['swimming gracefully','in motion underwater','breaching'],
+      feature: ['shimmering scales','detailed fins','crystal clear water']
+    },
+    flower: {
+      he_kw: ['פרח','פרחים','ורד','חמנייה'],
+      en_kw: ['flower','rose','sunflower','tulip'],
+      base: 'flower',
+      is_scene: true,
+      breeds: ['delicate rose','bright sunflower','wild tulip field','pink cherry blossom'],
+      age: [''],
+      action: ['in bloom','swaying in the breeze','covered in morning dew'],
+      feature: ['vibrant petals','delicate stamens','soft natural light']
+    }
+  };
+
+  function pickRandom(arr) {
+    if (!arr || arr.length === 0) return '';
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function detectSubject(text) {
+    if (!text) return null;
+    var lower = text.toLowerCase();
+    for (var type in SUBJECT_BANKS) {
+      if (!SUBJECT_BANKS.hasOwnProperty(type)) continue;
+      var bank = SUBJECT_BANKS[type];
+      for (var i = 0; i < bank.he_kw.length; i++) {
+        if (text.indexOf(bank.he_kw[i]) !== -1) return type;
+      }
+      for (var j = 0; j < bank.en_kw.length; j++) {
+        if (lower.indexOf(bank.en_kw[j]) !== -1) return type;
+      }
+    }
+    return null;
+  }
+
+  function expandSubject(text) {
+    var type = detectSubject(text);
+    if (!type) return text;
+    var bank = SUBJECT_BANKS[type];
+    var breed = pickRandom(bank.breeds) || bank.base;
+    var age = pickRandom(bank.age) || '';
+    var action = pickRandom(bank.action) || '';
+    var feature = pickRandom(bank.feature) || '';
+    var main;
+    if (bank.is_scene) {
+      main = breed;
+    } else {
+      var prefix = age ? age + ' ' : '';
+      var hasBase = breed.toLowerCase().indexOf(bank.base) !== -1;
+      var noun = hasBase ? breed : (breed + ' ' + bank.base);
+      main = ('a ' + prefix + noun).replace(/\s+/g, ' ').trim();
+    }
+    var parts = [main];
+    if (action) parts.push(action);
+    if (feature) parts.push(feature);
+    return parts.join(', ');
+  }
+
+  function getThreshold() {
+    try {
+      var v = parseInt(localStorage.getItem(STORAGE_KEY_THRESHOLD), 10);
+      if (isNaN(v)) return THRESHOLD_DEFAULT;
+      // BUG-FOUND-001 (2026-05-13 QA): clamp to [0,100] to protect against corrupt localStorage
+      return Math.max(0, Math.min(100, v));
+    } catch(e) { return THRESHOLD_DEFAULT; }
+  }
+
+  function isEnabled() {
+    try {
+      var v = localStorage.getItem(STORAGE_KEY_ENABLED);
+      return v === null ? true : v === 'true';
+    } catch(e) { return true; }
+  }
+
+  function isKidsModeActive() {
+    var btn = document.getElementById('kidsBtn');
+    return !!(btn && btn.classList && btn.classList.contains('mode-active'));
+  }
+
+  function hasHebrewLiteralForRendering(text) {
+    if (typeof window.HebrewPromptEnhancer === 'undefined') return false;
+    try {
+      var literals = window.HebrewPromptEnhancer.extractLiteralHebrew(text);
+      return literals && literals.length > 0;
+    } catch(e) { return false; }
+  }
+
+  function shouldExpand(userText) {
+    if (!userText) return false;
+    if (!isEnabled()) return false;
+    // Gate 1: pool source
+    if (window.__paeInputSource === 'pool') {
+      window.__paeInputSource = null;
+      return false;
+    }
+    // Gate 2: kids mode (v1 — banks not yet tuned for kids tone)
+    if (isKidsModeActive()) return false;
+    // Gate 3: HPE territory (literal Hebrew for image rendering)
+    if (hasHebrewLiteralForRendering(userText)) return false;
+    // Gate 4: strength threshold (power-user protection)
+    if (typeof window.calculateStrength === 'function') {
+      var result = window.calculateStrength(userText);
+      var threshold = getThreshold();
+      if (result && typeof result.score === 'number' && result.score >= threshold) return false;
+    }
+    return true;
+  }
+
+  // Mark pool sources: wrap window.* + click capture (belt+suspenders)
+  function wrapPoolSources() {
+    var names = ['randomize','randomizeKids','applyVariant'];
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i];
+      if (typeof window[name] !== 'function') continue;
+      if (window[name].__poolWrapped) continue;
+      (function(n) {
+        var orig = window[n];
+        var wrapped = function() {
+          window.__paeInputSource = 'pool';
+          return orig.apply(this, arguments);
+        };
+        wrapped.__poolWrapped = true;
+        window[n] = wrapped;
+      })(name);
+    }
+  }
+
+  // Click capture: catches S1 modal cards (whose internal applyVariant bypasses window.applyVariant)
+  function installClickCapture() {
+    if (window.__expanderClickCapInstalled) return;
+    window.__expanderClickCapInstalled = true;
+    document.addEventListener('click', function(e) {
+      if (!e.target || !e.target.closest) return;
+      if (e.target.closest('.var-card') || e.target.closest('#kidsBtn')) {
+        window.__paeInputSource = 'pool';
+      }
+    }, true);
+  }
+
+  // Wrap generate() for post-process replacement
+  var _reentry = false;
+  function installGenerateWrapper() {
+    if (typeof window.generate !== 'function') {
+      setTimeout(installGenerateWrapper, 200);
+      return;
+    }
+    if (window.generate.__expanderWrapped) return;
+    var orig = window.generate;
+    var wrapped = function() {
+      var result = orig.apply(this, arguments);
+      if (_reentry) return result;
+      var ta = document.getElementById('userInput');
+      var fp = document.getElementById('finalPrompt');
+      if (!ta || !fp) return result;
+      var userText = (ta.value || '').trim();
+      if (!userText) return result;
+      if (!shouldExpand(userText)) return result;
+      var expanded = expandSubject(userText);
+      if (!expanded || expanded === userText) return result;
+      var fpText = fp.textContent || '';
+      // Safety: only replace if finalPrompt actually starts with userText
+      if (fpText.indexOf(userText) !== 0) return result;
+      var newFp = expanded + fpText.substring(userText.length);
+      _reentry = true;
+      try { fp.textContent = newFp; }
+      finally { _reentry = false; }
+      // Update char count
+      var cc = document.getElementById('charCount');
+      if (cc) {
+        try {
+          if (typeof window.T !== 'undefined' && typeof window.currentLang !== 'undefined' && window.T[window.currentLang]) {
+            cc.textContent = window.T[window.currentLang].charCount(newFp.length);
+          } else {
+            cc.textContent = newFp.length + ' תווים';
+          }
+        } catch(e) { cc.textContent = newFp.length + ' תווים'; }
+      }
+      return result;
+    };
+    wrapped.__expanderWrapped = true;
+    window.generate = wrapped;
+  }
+
+  // Settings UI integration
+  function installSettingsControls() {
+    var modal = document.getElementById('settingsModal');
+    if (!modal) { setTimeout(installSettingsControls, 500); return; }
+    if (document.getElementById('settingExpander')) return;
+    var content = modal.querySelector('.settings-modal-content');
+    if (!content) return;
+    var actions = content.querySelector('.settings-actions');
+    if (!actions) return;
+    var row = document.createElement('div');
+    row.className = 'settings-row';
+    row.innerHTML =
+      '<div>' +
+        '<label for="settingExpander">✨ הרחבת נושא אוטומטית</label>' +
+        '<div class="settings-sub">מעשיר טקסט קצר ברקע: \"חתול\" → fluffy ginger cat with green eyes</div>' +
+      '</div>' +
+      '<input type="checkbox" id="settingExpander" aria-label="הרחבת נושא אוטומטית">';
+    content.insertBefore(row, actions);
+    var cb = document.getElementById('settingExpander');
+    if (cb) cb.checked = isEnabled();
+    var saveBtn = content.querySelector('.settings-save');
+    if (saveBtn && !saveBtn.__expanderHooked) {
+      saveBtn.__expanderHooked = true;
+      saveBtn.addEventListener('click', function() {
+        try {
+          var c = document.getElementById('settingExpander');
+          if (c) localStorage.setItem(STORAGE_KEY_ENABLED, c.checked ? 'true' : 'false');
+        } catch(e) {}
+      }, true);
+    }
+  }
+
+  function boot() {
+    wrapPoolSources();
+    installClickCapture();
+    installGenerateWrapper();
+    installSettingsControls();
+    // Re-attempt pool wrap for late-loading modules
+    var attempts = 0;
+    var retry = setInterval(function() {
+      wrapPoolSources();
+      attempts++;
+      if (attempts >= 10) clearInterval(retry);
+    }, 300);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  // Public API
+  window.SubjectExpander = {
+    detect: detectSubject,
+    expand: expandSubject,
+    shouldExpand: shouldExpand,
+    getThreshold: getThreshold,
+    isEnabled: isEnabled,
+    SUBJECT_BANKS: SUBJECT_BANKS
+  };
+})();
+</script>
+
+</main>
 <!-- v2: all v6.2-v7.9.1 patches consolidated into pae-v2-module.js -->
 <script src="pae-v2-module.js"></script>
 <!--V2_CONSOLIDATED_START-->
@@ -4578,10 +4949,10 @@ if (document.readyState === 'loading') {
   window.__strengthMeterInstalled = true;
 
   // === Detection patterns (case-insensitive) ===
-  var STYLE_KEYWORDS = /photorealistic|watercolor|oil painting|anime|cinematic|comic|pixel|3d render|cyberpunk|fantasy|portrait|illustration|sketch|noir|impressionist|surreal|abstract|vintage|retro|minimalist|dreamy|ghibli|pixar|disney|manga/i;
-  var LIGHTING_KEYWORDS = /golden hour|neon|soft (light|natural)|sunset|sunrise|daylight|twilight|moonlight|backlit|rim light|dramatic light|ambient|volumetric|chiaroscuro|silhouette|haze|glow|hdr|low light|night scene|תאורה|זריחה|שקיעה|ירח/i;
-  var CAMERA_KEYWORDS = /close-?up|wide shot|dolly|zoom|pov|aerial|bird'?s eye|orbit|tracking|handheld|crane|macro|tilt|pan|fisheye|telephoto|low angle|high angle|over the shoulder|מצלמה|זום|תקריב/i;
-  var QUALITY_KEYWORDS = /4k|8k|hd|sharp|detailed|hyperdetailed|masterpiece|best quality|professional|award.?winning|trending|artstation|highly detailed|crisp|ultra/i;
+  var STYLE_KEYWORDS = /photorealistic|watercolor|oil painting|anime|cinematic|comic|pixel|3d render|cyberpunk|fantasy|portrait|illustration|sketch|noir|impressionist|surreal|abstract|vintage|retro|minimalist|dreamy|ghibli|pixar|disney|manga|פוטוריאליסטי|ריאליסטי|צבעי\s*מים|אקוורל|ציור\s*שמן|שמן\s*על\s*בד|אנימה|מנגה|קולנועי|סינמטי|קומיקס|פיקסל\s*ארט|פיקסל|תלת\s*מימד|רנדר|סייברפאנק|פנטזיה|פנטסטי|פורטרט|דיוקן|איור|סקיצה|נואר|אימפרסיוניסטי|סוריאליסטי|חלומי|אבסטרקטי|מופשט|וינטג|וינטאג|רטרו|מינימליסטי|גיבלי|פיקסר|דיסני/i;
+  var LIGHTING_KEYWORDS = /golden hour|neon|soft (light|natural)|sunset|sunrise|daylight|twilight|moonlight|backlit|rim light|dramatic light|ambient|volumetric|chiaroscuro|silhouette|haze|glow|hdr|low light|night scene|תאורה|זריחה|שקיעה|ירח|תאורה\s*דרמטית|אור\s*רך|אור\s*חזק|ערפילי|אווירתי|תאורת\s*סטודיו|שעת\s*זהב/i;
+  var CAMERA_KEYWORDS = /close-?up|wide shot|dolly|zoom|pov|aerial|bird'?s eye|orbit|tracking|handheld|crane|macro|tilt|pan|fisheye|telephoto|low angle|high angle|over the shoulder|מצלמה|זום|תקריב|שוט\s*רחב|מקרוב|מבט\s*על|מבט\s*מלמטה|מבט\s*מהצד|זווית\s*נמוכה|מבט\s*ציפור/i;
+  var QUALITY_KEYWORDS = /4k|8k|hd|sharp|detailed|hyperdetailed|masterpiece|best quality|professional|award.?winning|trending|artstation|highly detailed|crisp|ultra|חדים|מפורט|מפורטים|היפר\s*מפורט|יצירת\s*מופת|איכות\s*מעולה|איכות\s*גבוהה|מקצועי|מקצועיים|אולטרה|מקסימום|פרטים\s*עדינים|פרטים\s*מדויקים/i;
 
   // === i18n labels ===
   var T = {
@@ -4607,15 +4978,20 @@ if (document.readyState === 'loading') {
     var clean = text.replace(/--\w+\s+\S+/g, '').replace(/-fps|-ar|-dur|-seed/g, '').trim();
     var words = clean.split(/\s+/).filter(Boolean);
     var len = clean.length;
+    // S23 (2026-05-13): Hebrew bonus compensates for English-only style detection in
+    // Hebrew-rich prompts. Protects Hebrew power users from Subject Expander false-fires.
+    var hebrewWords = (clean.match(/[\u0590-\u05FF]+/g) || []).length;
+    var hebrewBonus = hebrewWords >= 8 ? 15 : (hebrewWords >= 5 ? 10 : (hebrewWords >= 3 ? 5 : 0));
     var components = {
       subject: words.length >= 4 ? 25 : Math.round(words.length * 6.25),
       style: STYLE_KEYWORDS.test(clean) ? 20 : 0,
       lighting: LIGHTING_KEYWORDS.test(clean) ? 15 : 0,
       camera: CAMERA_KEYWORDS.test(clean) ? 15 : 0,
       quality: QUALITY_KEYWORDS.test(clean) ? 15 : 0,
-      length: (len >= 50 && len <= 350) ? 10 : (len >= 30 ? 5 : 0)
+      length: (len >= 50 && len <= 350) ? 10 : (len >= 30 ? 5 : 0),
+      hebrew_bonus: hebrewBonus
     };
-    var score = Math.min(100, components.subject + components.style + components.lighting + components.camera + components.quality + components.length);
+    var score = Math.min(100, components.subject + components.style + components.lighting + components.camera + components.quality + components.length + components.hebrew_bonus);
     var tips = [];
     if (len < 30) tips.push('tipShort');
     else {

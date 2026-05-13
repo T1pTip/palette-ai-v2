@@ -1,0 +1,65 @@
+name: Pre-deploy syntax check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax check JS modules
+        run: |
+          echo "::group::Checking pae-v2-module.js"
+          node --check pae-v2-module.js
+          echo "::endgroup::"
+          echo "::group::Checking pae-video-module.js"
+          node --check pae-video-module.js
+          echo "::endgroup::"
+          echo "::group::Checking sw.js"
+          node --check sw.js
+          echo "::endgroup::"
+
+      - name: Validate manifest.json
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+          echo "✅ manifest.json is valid JSON"
+
+      - name: Validate version.json
+        run: |
+          node -e "const v = JSON.parse(require('fs').readFileSync('version.json','utf8')); if (!v.version) process.exit(1); console.log('✅ version.json valid — v' + v.version);"
+
+      - name: Extract & check inline scripts in index.html
+        run: |
+          python3 << 'PY'
+          import re, sys, tempfile, subprocess
+          html = open('index.html', encoding='utf-8').read()
+          # Match <script> blocks without src="..." attribute
+          blocks = re.findall(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>', html, re.S)
+          print(f"Found {len(blocks)} inline script blocks")
+          # Substitute the well-known placeholder pattern (none in palette-ai, but defense-in-depth)
+          combined = '\n//---NEXT-BLOCK---\n'.join(b.replace('/*__DATA__*/', '{}') for b in blocks)
+          with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
+              f.write(combined)
+              tmppath = f.name
+          result = subprocess.run(['node', '--check', tmppath], capture_output=True, text=True)
+          if result.returncode != 0:
+              print("❌ Inline script syntax error:")
+              print(result.stderr)
+              sys.exit(1)
+          print(f"✅ All {len(blocks)} inline script blocks pass node --check")
+          PY
+
+      - name: Report
+        if: success()
+        run: echo "✅ All checks passed — safe to deploy"
